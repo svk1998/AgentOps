@@ -1,0 +1,49 @@
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+  "E",    # pycodestyle errors
+  "W",    # pycodestyle warnings
+  "F",    # pyflakes
+  "I",    # isort
+  "N",    # pep8-naming
+  "UP",   # pyupgrade — modernise syntax for the target Python version
+  "B",    # flake8-bugbear — common bug patterns
+  "A",    # flake8-builtins — shadowing builtins
+  "C4",   # flake8-comprehensions — cleaner list/dict/set expressions
+  "RET",  # flake8-return — consistent return statements
+  "SIM",  # flake8-simplify
+  "TCH",  # flake8-type-checking — move type-only imports into TYPE_CHECKING blocks
+  "PTH",  # flake8-use-pathlib — prefer pathlib over os.path
+  "TID",  # flake8-tidy-imports
+]
+ignore = [
+  "B008",  # do not perform function calls in default arguments (FastAPI Depends() pattern)
+  "A003",  # shadowing built-in `id` — common in SQLAlchemy models
+  "N805",  # first arg of method not `self` — fires on pydantic validators
+  "RET504", # unnecessary assignment before return
+  "UP017",  # use datetime.UTC — Python 3.11+ only, project targets 3.10
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+force-sort-within-sections = true
+
+[tool.ruff.lint.per-file-ignores]
+# Tests can use assert and don't need type annotations
+"tests/**/*.py" = ["S101", "ANN"]
+# Migrations are auto-generated, skip most checks
+"migrations/versions/*.py" = ["E501", "F401"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+# ── Pytest ────────────────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]

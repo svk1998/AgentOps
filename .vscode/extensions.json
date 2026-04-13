@@ -1,0 +1,26 @@
+{
+  "recommendations": [
+    // ── Vue / Frontend ──────────────────────────────────────────────────────
+    "Vue.volar",                        // Vue 3 language support (LSP, type-check, template intellisense)
+    "dbaeumer.vscode-eslint",           // ESLint integration — highlights & auto-fixes on save
+    "esbenp.prettier-vscode",           // Prettier formatter
+
+    // ── Python / FastAPI ────────────────────────────────────────────────────
+    "ms-python.python",                 // Python language support
+    "ms-python.pylance",                // Pyright-based IntelliSense & type checking
+    "charliermarsh.ruff",              // Ruff linter + formatter (replaces flake8, isort, black)
+
+    // ── Database ────────────────────────────────────────────────────────────
+    "mtxr.sqltools",                    // SQL query runner & connection manager
+    "mtxr.sqltools-driver-pg",          // PostgreSQL driver for SQLTools
+
+    // ── REST / API ──────────────────────────────────────────────────────────
+    "humao.rest-client",                // Send HTTP requests from .http files
+
+    // ── General DX ──────────────────────────────────────────────────────────
+    "EditorConfig.EditorConfig",        // Honour .editorconfig (indent, line endings, etc.)
+    "eamodio.gitlens",                  // Inline git blame + history
+    "streetsidesoftware.code-spell-checker", // Spell checking in comments & strings
+    "aaron-bond.better-comments"        // Colour-coded comment annotations (TODO, !, ?)
+  ]
+}

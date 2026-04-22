@@ -125,37 +125,48 @@ const navSections = computed(() => [
     items: [{ to: '/dashboard', icon: 'pi-th-large', label: 'Dashboard' }],
   },
   {
-    label: 'Orchestration',
+    label: 'Registry',
     items: [
-      { to: '/agents',    icon: 'pi-sparkles', label: 'Agents' },
-      { to: '/runs',      icon: 'pi-play',     label: 'Runs' },
-      { to: '/workflows', icon: 'pi-sitemap',  label: 'Workflows', badge: 'Preview' },
+      { to: '/registry/agents', icon: 'pi-sparkles', label: 'Agents' },
     ],
   },
   {
-    label: 'AI',
+    label: 'Evaluate',
     items: [
-      { to: '/prompt-optimizer', icon: 'pi-bolt',      label: 'Prompt Optimizer' },
-      { to: '/tools',            icon: 'pi-wrench',    label: 'Tools' },
-      { to: '/models',           icon: 'pi-microchip', label: 'Models' },
+      { to: '/evaluate/datasets',   icon: 'pi-database',    label: 'Datasets' },
+      { to: '/evaluate/runs',       icon: 'pi-play-circle', label: 'Eval Runs' },
+      { to: '/evaluate/playground', icon: 'pi-eye',         label: 'Playground' },
+    ],
+  },
+  {
+    label: 'Observe',
+    items: [
+      { to: '/analytics', icon: 'pi-chart-line', label: 'Analytics' },
     ],
   },
   ...(auth.user?.is_superuser
-    ? [{ label: 'Admin', items: [{ to: '/users', icon: 'pi-users', label: 'Users' }] }]
+    ? [{
+        label: 'Admin',
+        items: [
+          { to: '/users',    icon: 'pi-users', label: 'Users' },
+          { to: '/settings', icon: 'pi-cog',   label: 'Settings' },
+        ],
+      }]
     : []),
 ])
 
 // ── Breadcrumbs ────────────────────────────────────────────────────────────
 const ROUTE_LABELS = {
-  dashboard: 'Dashboard',
-  agents: 'Agents',
-  runs: 'Runs',
-  tools: 'Tools',
-  models: 'Models',
-  users: 'Users',
-  workflows: 'Workflows',
-  'prompt-optimizer': 'Prompt Optimizer',
-  history: 'History',
+  dashboard:  'Dashboard',
+  registry:   'Registry',
+  agents:     'Agents',
+  evaluate:   'Evaluate',
+  datasets:   'Datasets',
+  runs:       'Eval Runs',
+  playground: 'Playground',
+  analytics:  'Analytics',
+  settings:   'Settings',
+  users:      'Users',
 }
 
 const breadcrumbHome = computed(() => ({
@@ -284,7 +295,7 @@ const breadcrumbItems = computed(() => {
   color: var(--p-text-color, var(--color-text));
 }
 .nav-item--active {
-  background: color-mix(in srgb, var(--p-primary-500, #6366f1) 14%, transparent);
+  background: color-mix(in srgb, var(--p-primary-500, var(--color-primary)) 14%, transparent);
   color: var(--p-primary-300, var(--color-primary-light));
   font-weight: 600;
 }
@@ -341,7 +352,7 @@ const breadcrumbItems = computed(() => {
   overflow: hidden;
 }
 .user-avatar {
-  background: color-mix(in srgb, var(--p-primary-500, #6366f1) 22%, transparent) !important;
+  background: color-mix(in srgb, var(--p-primary-500, var(--color-primary)) 22%, transparent) !important;
   color: var(--p-primary-300, var(--color-primary-light)) !important;
   font-weight: 700;
   font-size: 0.72rem;

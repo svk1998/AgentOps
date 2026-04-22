@@ -1,8 +1,8 @@
+/* ── Design Tokens + Global Classes (must be first — CSS @import rule) ── */
+@import './theme.css';
+
 /* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* ── Design Tokens + Global Classes ── */
-@import './theme.css';
 
 /* ── Base ── */
 html, body { height: 100%; }

@@ -1,85 +1,8 @@
 /* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── Design Tokens ──
- * Legacy CSS variables used by un-ported (custom-CSS) views. Values are
- * aligned with PrimeVue's Aura dark preset (slate palette + indigo accent)
- * so un-ported views blend seamlessly with PrimeVue components.
- *
- * When migrating a view to PrimeVue, prefer `--p-*` tokens over these.
- */
-:root {
-  /* Backgrounds — slate 950 / 900 / 800 / 700 */
-  --color-bg:           #020617;
-  --color-surface:      #0f172a;
-  --color-surface-2:    #1e293b;
-  --color-surface-3:    #334155;
-
-  /* Borders */
-  --color-border:       #1e293b;
-  --color-border-strong: #334155;
-
-  /* Text */
-  --color-text:         #f1f5f9;
-  --color-text-muted:   #94a3b8;
-  --color-text-subtle:  #64748b;
-
-  /* Brand — indigo */
-  --color-primary:        #6366f1;
-  --color-primary-hover:  #4f46e5;
-  --color-primary-subtle: #1e1b4b;
-  --color-primary-light:  #a5b4fc;
-
-  /* Semantic */
-  --color-success:        #22c55e;
-  --color-success-subtle: #052e16;
-  --color-success-text:   #4ade80;
-
-  --color-warning:        #eab308;
-  --color-warning-subtle: #422006;
-  --color-warning-text:   #facc15;
-
-  --color-danger:         #ef4444;
-  --color-danger-subtle:  #450a0a;
-  --color-danger-text:    #f87171;
-  --color-danger-hover:   #dc2626;
-
-  --color-info:           #3b82f6;
-  --color-info-subtle:    #0c1e3e;
-
-  /* Run status */
-  --color-pending:        #94a3b8;
-  --color-running:        #3b82f6;
-  --color-running-subtle: #0c1e3e;
-  --color-completed:      #22c55e;
-  --color-failed:         #ef4444;
-  --color-cancelled:      #64748b;
-
-  /* Layout */
-  --sidebar-width:    244px;
-  --topbar-height:    56px;
-
-  /* Radius */
-  --radius-sm:  0.25rem;
-  --radius:     0.5rem;
-  --radius-lg:  0.75rem;
-  --radius-xl:  1rem;
-
-  /* Shadows */
-  --shadow-sm:  0 1px 2px rgba(0,0,0,0.4);
-  --shadow:     0 2px 6px rgba(0,0,0,0.4);
-  --shadow-md:  0 4px 12px rgba(0,0,0,0.5);
-  --shadow-lg:  0 8px 24px rgba(0,0,0,0.6);
-  --shadow-xl:  0 16px 40px rgba(0,0,0,0.7);
-
-  /* Typography */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
-
-  /* Transitions */
-  --transition: 0.15s ease;
-  --transition-slow: 0.25s ease;
-}
+/* ── Design Tokens ── */
+@import './theme.css';
 
 /* ── Base ── */
 html { color-scheme: dark; }

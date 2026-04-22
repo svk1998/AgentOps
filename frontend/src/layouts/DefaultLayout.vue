@@ -1,92 +1,85 @@
 <template>
   <div class="app-shell">
-    <!-- ── Sidebar ──────────────────────────────────────────────────── -->
+    <!-- ── Sidebar ── -->
     <aside class="sidebar" :class="{ 'sidebar--collapsed': collapsed }">
+
       <!-- Brand -->
       <div class="sidebar-brand">
-        <RouterLink to="/dashboard" class="brand-link">
-          <img src="/logo.svg" alt="AgentOps" class="brand-logo" />
-          <span v-show="!collapsed" class="brand-name">
-            Agent<span class="brand-accent">Ops</span>
-          </span>
-        </RouterLink>
+        <div class="brand-inner">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" class="brand-logo">
+            <rect x="1" y="1" width="16" height="16" rx="3" fill="var(--accent)" />
+            <path d="M5 12 L9 5 L13 12 M6.5 10 H11.5"
+              stroke="var(--accent-text)" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round" fill="none" />
+          </svg>
+          <span v-show="!collapsed" class="brand-name">agentops</span>
+        </div>
         <button
-          class="collapse-btn"
-          :title="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+          class="btn ghost collapse-btn"
+          :title="collapsed ? 'Expand' : 'Collapse'"
           @click="collapsed = !collapsed"
         >
-          <i :class="['pi', collapsed ? 'pi-angle-right' : 'pi-angle-left']" />
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <path v-if="!collapsed" d="M10 4L6 8l4 4" />
+            <path v-else d="M6 4l4 4-4 4" />
+          </svg>
         </button>
       </div>
 
       <!-- Nav -->
       <nav class="sidebar-nav">
-        <div v-for="section in navSections" :key="section.label" class="nav-section">
-          <p v-show="!collapsed" class="nav-section-label">{{ section.label }}</p>
+        <template v-for="section in navSections" :key="section.label">
+          <div v-show="!collapsed" class="nav-section-label">{{ section.label }}</div>
           <RouterLink
             v-for="item in section.items"
-            :key="item.to || item.label"
-            v-tooltip.right="collapsed ? item.label : null"
+            :key="item.to"
             :to="item.to"
-            :class="['nav-item', { 'nav-item--disabled': item.disabled }]"
-            active-class="nav-item--active"
-            @click="item.disabled && $event.preventDefault()"
+            class="nav-row"
+            active-class="nav-row--active"
+            :title="collapsed ? item.label : undefined"
           >
-            <i :class="['nav-icon pi', item.icon]" />
+            <component :is="item.icon" class="nav-icon" />
             <span v-show="!collapsed" class="nav-label">{{ item.label }}</span>
-            <Tag
-              v-if="!collapsed && item.badge"
-              :value="item.badge"
-              severity="secondary"
-              class="nav-badge"
-            />
+            <span v-if="!collapsed && item.shortcut" class="kbd nav-shortcut">{{ item.shortcut }}</span>
           </RouterLink>
-        </div>
+        </template>
       </nav>
 
       <!-- Footer -->
       <div class="sidebar-footer">
-        <div v-show="!collapsed" class="user-block">
-          <Avatar
-            :label="initials"
-            shape="circle"
-            class="user-avatar"
-          />
+        <div v-show="!collapsed" class="user-row">
+          <div class="user-avatar">{{ initials }}</div>
           <div class="user-info">
-            <p class="user-name">{{ auth.user?.full_name || auth.user?.email }}</p>
-            <p class="user-role">{{ auth.user?.is_superuser ? 'Admin' : 'Member' }}</p>
+            <div class="user-name">{{ auth.user?.full_name || auth.user?.email }}</div>
+            <div class="user-role mono">{{ auth.user?.is_superuser ? 'admin' : 'member' }}</div>
           </div>
         </div>
-        <Button
-          v-tooltip.right="'Sign out'"
-          icon="pi pi-sign-out"
-          severity="secondary"
-          text
-          rounded
-          aria-label="Sign out"
-          @click="auth.logout"
-        />
+        <button class="btn ghost icon-btn" title="Sign out" @click="auth.logout">
+          <IconSignOut />
+        </button>
       </div>
     </aside>
 
-    <!-- ── Main ─────────────────────────────────────────────────────── -->
+    <!-- ── Main ── -->
     <div class="main-wrapper">
+      <!-- Topbar -->
       <header class="topbar">
-        <Breadcrumb :home="breadcrumbHome" :model="breadcrumbItems" class="topbar-crumbs">
-          <template #item="{ item }">
-            <RouterLink v-if="item.to" :to="item.to" class="crumb-link">
-              <i v-if="item.icon" :class="['pi', item.icon]" />
-              <span>{{ item.label }}</span>
-            </RouterLink>
-            <span v-else class="crumb-current">{{ item.label }}</span>
+        <div class="breadcrumb">
+          <RouterLink to="/dashboard" class="crumb-link">
+            <IconHome />
+          </RouterLink>
+          <template v-for="(crumb, i) in breadcrumbs" :key="i">
+            <span class="crumb-sep">›</span>
+            <RouterLink v-if="crumb.to" :to="crumb.to" class="crumb-link">{{ crumb.label }}</RouterLink>
+            <span v-else class="crumb-current">{{ crumb.label }}</span>
           </template>
-        </Breadcrumb>
-
+        </div>
         <div class="topbar-right">
-          <Tag value="v0.1.0" severity="secondary" rounded />
+          <span class="chip">v0.1.0</span>
         </div>
       </header>
 
+      <!-- Page content -->
       <main class="page-content">
         <RouterView />
       </main>
@@ -99,327 +92,295 @@ import { ref, computed } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
-import Avatar from 'primevue/avatar'
-import Breadcrumb from 'primevue/breadcrumb'
-import Button from 'primevue/button'
-import Tag from 'primevue/tag'
-
 const auth = useAuthStore()
 const route = useRoute()
 const collapsed = ref(false)
 
 const initials = computed(() => {
   const name = auth.user?.full_name || auth.user?.email || ''
-  return (
-    name.split(/[\s@]/).map((s) => s[0]).filter(Boolean).slice(0, 2).join('').toUpperCase() ||
-    '?'
-  )
+  return name.split(/[\s@]/).map(s => s[0]).filter(Boolean).slice(0, 2).join('').toUpperCase() || '?'
 })
 
-// ── Navigation model ───────────────────────────────────────────────────────
-// Structured so each section is rendered once; add/remove items here rather
-// than duplicating the sidebar markup.
+// ── Inline SVG icon components ───────────────────────────────────────────────
+const IconFleet = {
+  template: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>`
+}
+const IconEval = {
+  template: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l2-3 3 1 5-7"/><path d="M13 4h1v1"/></svg>`
+}
+const IconDatabase = {
+  template: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="8" cy="4" rx="6" ry="2"/><path d="M2 4v4c0 1.1 2.7 2 6 2s6-.9 6-2V4"/><path d="M2 8v4c0 1.1 2.7 2 6 2s6-.9 6-2V8"/></svg>`
+}
+const IconPlay = {
+  template: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M6.5 5.5l4 2.5-4 2.5z" fill="currentColor" stroke="none"/></svg>`
+}
+const IconEye = {
+  template: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2"/></svg>`
+}
+const IconChart = {
+  template: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12l3-4 3 2 4-6"/><path d="M2 14h12"/></svg>`
+}
+const IconUsers = {
+  template: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="5" r="2.5"/><path d="M1 14c0-2.8 2.2-5 5-5s5 2.2 5 5"/><path d="M11 3.5c1.4 0 2.5 1.1 2.5 2.5S12.4 8.5 11 8.5M15 14c0-2.2-1.8-4-4-4"/></svg>`
+}
+const IconSettings = {
+  template: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.1 3.1l1.4 1.4M11.5 11.5l1.4 1.4M3.1 12.9l1.4-1.4M11.5 4.5l1.4-1.4"/></svg>`
+}
+const IconHome = {
+  template: `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5L8 2l6 4.5V14a1 1 0 01-1 1H3a1 1 0 01-1-1z"/><path d="M6 15V9h4v6"/></svg>`
+}
+const IconSignOut = {
+  template: `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3H3a1 1 0 00-1 1v8a1 1 0 001 1h3"/><path d="M10 11l4-3-4-3"/><path d="M6 8h8"/></svg>`
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────────
 const navSections = computed(() => [
   {
-    label: 'Overview',
-    items: [{ to: '/dashboard', icon: 'pi-th-large', label: 'Dashboard' }],
-  },
-  {
-    label: 'Registry',
+    label: 'Platform',
     items: [
-      { to: '/registry/agents', icon: 'pi-sparkles', label: 'Agents' },
+      { to: '/dashboard',       icon: IconFleet,    label: 'Dashboard',  shortcut: '1' },
+      { to: '/registry/agents', icon: IconEval,     label: 'Agents',     shortcut: '2' },
     ],
   },
   {
     label: 'Evaluate',
     items: [
-      { to: '/evaluate/datasets',   icon: 'pi-database',    label: 'Datasets' },
-      { to: '/evaluate/runs',       icon: 'pi-play-circle', label: 'Eval Runs' },
-      { to: '/evaluate/playground', icon: 'pi-eye',         label: 'Playground' },
+      { to: '/evaluate/datasets',   icon: IconDatabase, label: 'Datasets',   shortcut: '3' },
+      { to: '/evaluate/runs',       icon: IconPlay,     label: 'Eval Runs',  shortcut: '4' },
+      { to: '/evaluate/playground', icon: IconEye,      label: 'Playground', shortcut: '5' },
     ],
   },
   {
     label: 'Observe',
     items: [
-      { to: '/analytics', icon: 'pi-chart-line', label: 'Analytics' },
+      { to: '/analytics', icon: IconChart, label: 'Analytics', shortcut: '6' },
     ],
   },
-  ...(auth.user?.is_superuser
-    ? [{
-        label: 'Admin',
-        items: [
-          { to: '/users',    icon: 'pi-users', label: 'Users' },
-          { to: '/settings', icon: 'pi-cog',   label: 'Settings' },
-        ],
-      }]
-    : []),
+  ...(auth.user?.is_superuser ? [{
+    label: 'Admin',
+    items: [
+      { to: '/users',    icon: IconUsers,    label: 'Users',    shortcut: '7' },
+      { to: '/settings', icon: IconSettings, label: 'Settings', shortcut: '8' },
+    ],
+  }] : []),
 ])
 
-// ── Breadcrumbs ────────────────────────────────────────────────────────────
-const ROUTE_LABELS = {
-  dashboard:  'Dashboard',
-  registry:   'Registry',
-  agents:     'Agents',
-  evaluate:   'Evaluate',
-  datasets:   'Datasets',
-  runs:       'Eval Runs',
-  playground: 'Playground',
-  analytics:  'Analytics',
-  settings:   'Settings',
-  users:      'Users',
+// ── Breadcrumbs ───────────────────────────────────────────────────────────────
+const LABELS = {
+  dashboard: 'Dashboard', registry: 'Registry', agents: 'Agents',
+  evaluate: 'Evaluate', datasets: 'Datasets', runs: 'Eval Runs',
+  playground: 'Playground', analytics: 'Analytics',
+  settings: 'Settings', users: 'Users',
 }
 
-const breadcrumbHome = computed(() => ({
-  icon: 'pi pi-home',
-  to: '/dashboard',
-}))
-
-const breadcrumbItems = computed(() => {
+const breadcrumbs = computed(() => {
   const parts = route.path.split('/').filter(Boolean)
   if (!parts.length || parts[0] === 'dashboard') return []
   return parts.map((p, i) => ({
-    label: ROUTE_LABELS[p] || route.meta.title || p,
+    label: LABELS[p] || route.meta.title || p,
     to: i < parts.length - 1 ? '/' + parts.slice(0, i + 1).join('/') : null,
   }))
 })
 </script>
 
 <style scoped>
-/* ── Shell ───────────────────────────────────────────────────────────────── */
+/* ── Shell ── */
 .app-shell {
   display: flex;
   height: 100vh;
   overflow: hidden;
-  background: var(--p-surface-950, var(--color-bg));
+  background: var(--bg);
 }
 
-/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+/* ── Sidebar ── */
 .sidebar {
   width: var(--sidebar-width);
-  background: var(--p-surface-900, var(--color-surface));
-  border-right: 1px solid var(--p-surface-800, var(--color-border));
+  background: var(--panel);
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  transition: width var(--transition-slow);
   flex-shrink: 0;
+  transition: width 0.2s ease;
   overflow: hidden;
 }
-.sidebar--collapsed { width: 64px; }
+.sidebar--collapsed { width: 52px; }
 
 /* Brand */
 .sidebar-brand {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 0.75rem;
-  height: var(--topbar-height);
-  border-bottom: 1px solid var(--p-surface-800, var(--color-border));
+  padding: 14px 12px 10px;
   flex-shrink: 0;
-  gap: 0.25rem;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
 }
-.brand-link {
+.brand-inner {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 8px;
   overflow: hidden;
   flex: 1;
 }
-.brand-logo {
-  width: 30px;
-  height: 30px;
-  border-radius: 7px;
-  flex-shrink: 0;
-}
+.brand-logo { flex-shrink: 0; }
 .brand-name {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--p-text-color, var(--color-text));
+  font-family: var(--mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   white-space: nowrap;
-  letter-spacing: -0.01em;
+  color: var(--text);
 }
-.brand-accent { color: var(--p-primary-400, var(--color-primary-light)); }
-
 .collapse-btn {
-  background: none;
-  border: none;
-  color: var(--p-text-muted-color, var(--color-text-subtle));
-  cursor: pointer;
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-sm);
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  justify-content: center;
   flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  font-size: 12px;
-  transition: color var(--transition), background var(--transition);
-}
-.collapse-btn:hover {
-  color: var(--p-text-color, var(--color-text));
-  background: var(--p-surface-800, var(--color-surface-2));
 }
 
 /* Nav */
 .sidebar-nav {
   flex: 1;
   overflow-y: auto;
-  padding: 0.75rem 0.5rem;
+  padding: 6px 8px;
 }
-.nav-section + .nav-section { margin-top: 0.75rem; }
 .nav-section-label {
-  font-size: 0.68rem;
-  font-weight: 600;
+  padding: 12px 10px 4px;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: var(--p-text-muted-color, var(--color-text-subtle));
-  padding: 0.35rem 0.75rem;
+  color: var(--text-faint);
+  font-family: var(--mono);
   white-space: nowrap;
 }
-.nav-item {
+.nav-row {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
-  padding: 0.55rem 0.7rem;
-  margin: 0.1rem 0;
-  border-radius: var(--radius);
-  color: var(--p-text-muted-color, var(--color-text-muted));
+  gap: 9px;
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: var(--r);
+  font-size: 12.5px;
+  color: var(--text-dim);
   text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: background var(--transition), color var(--transition);
+  font-weight: 400;
+  border-left: 2px solid transparent;
+  margin-left: -2px;
+  transition: background 0.1s, color 0.1s;
   white-space: nowrap;
   cursor: pointer;
-  position: relative;
 }
-.nav-item:hover {
-  background: var(--p-surface-800, var(--color-surface-2));
-  color: var(--p-text-color, var(--color-text));
+.nav-row:hover { background: var(--bg-hover); color: var(--text); }
+.nav-row--active {
+  background: var(--bg-elev-2);
+  color: var(--text);
+  font-weight: 500;
+  border-left-color: var(--accent);
 }
-.nav-item--active {
-  background: color-mix(in srgb, var(--p-primary-500, var(--color-primary)) 14%, transparent);
-  color: var(--p-primary-300, var(--color-primary-light));
-  font-weight: 600;
-}
-.nav-item--active::before {
-  content: '';
-  position: absolute;
-  left: -0.5rem;
-  top: 0.4rem;
-  bottom: 0.4rem;
-  width: 3px;
-  background: var(--p-primary-500, var(--color-primary));
-  border-radius: 0 3px 3px 0;
-}
-.nav-item--disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-.nav-item--disabled:hover {
-  background: transparent;
-  color: var(--p-text-muted-color, var(--color-text-muted));
-}
-.nav-icon {
-  width: 18px;
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  font-size: 15px;
-}
-.nav-label {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex: 1;
-}
-.nav-badge {
-  font-size: 0.62rem !important;
-  padding: 0.1rem 0.4rem !important;
-}
+.nav-icon { flex-shrink: 0; opacity: 0.8; }
+.nav-row--active .nav-icon { opacity: 1; }
+.nav-label { flex: 1; }
+.nav-shortcut { margin-left: auto; flex-shrink: 0; }
 
 /* Footer */
 .sidebar-footer {
-  border-top: 1px solid var(--p-surface-800, var(--color-border));
-  padding: 0.75rem;
+  border-top: 1px solid var(--border);
+  padding: 10px;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
   flex-shrink: 0;
 }
-.user-block {
+.user-row {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 8px;
   flex: 1;
   min-width: 0;
   overflow: hidden;
 }
 .user-avatar {
-  background: color-mix(in srgb, var(--p-primary-500, var(--color-primary)) 22%, transparent) !important;
-  color: var(--p-primary-300, var(--color-primary-light)) !important;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: 10px;
   font-weight: 700;
-  font-size: 0.72rem;
-  width: 32px !important;
-  height: 32px !important;
+  font-family: var(--mono);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 .user-info { min-width: 0; flex: 1; }
 .user-name {
-  font-size: 0.82rem;
+  font-size: 12px;
   font-weight: 500;
-  color: var(--p-text-color, var(--color-text));
+  color: var(--text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .user-role {
-  font-size: 0.7rem;
-  color: var(--p-text-muted-color, var(--color-text-subtle));
+  font-size: 10.5px;
+  color: var(--text-faint);
+}
+.icon-btn {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-/* ── Main ────────────────────────────────────────────────────────────────── */
+/* ── Main ── */
 .main-wrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
 }
 
+/* Topbar */
 .topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1.5rem;
   height: var(--topbar-height);
-  background: var(--p-surface-900, var(--color-surface));
-  border-bottom: 1px solid var(--p-surface-800, var(--color-border));
+  padding: 0 18px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
-
-:deep(.topbar-crumbs),
-:deep(.topbar-crumbs .p-breadcrumb) {
-  background: transparent;
-  border: none;
-  padding: 0;
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--text-faint);
 }
-:deep(.topbar-crumbs .p-breadcrumb-list) { gap: 0.35rem; }
-:deep(.crumb-link) {
-  color: var(--p-text-muted-color, var(--color-text-muted));
+.crumb-link {
+  color: var(--text-dim);
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  font-size: 0.82rem;
-  transition: color var(--transition);
+  gap: 4px;
+  transition: color 0.1s;
+  text-decoration: none;
 }
-:deep(.crumb-link:hover) { color: var(--p-text-color, var(--color-text)); }
-:deep(.crumb-current) {
-  color: var(--p-text-color, var(--color-text));
-  font-weight: 500;
-  font-size: 0.82rem;
-}
+.crumb-link:hover { color: var(--text); }
+.crumb-sep { color: var(--text-faint); }
+.crumb-current { color: var(--text); font-weight: 500; }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
 
-.topbar-right { display: flex; align-items: center; gap: 0.75rem; }
-
+/* Page */
 .page-content {
   flex: 1;
   overflow-y: auto;
-  padding: 1.75rem 2rem;
+  padding: var(--pad);
+  background: var(--bg);
 }
 </style>

@@ -1,81 +1,233 @@
 /* ── AgentOps Design Tokens ─────────────────────────────────────────────────
- * Single source of truth for all color and spacing tokens.
- * All components import these via main.css.
- * Based on the AgentOps standalone.html amber/neutral-dark palette.
+ * Exact token names and values from AgentOps standalone.html
  */
+
 :root {
-  /* Backgrounds */
-  --color-bg:           #0A0B0D;
-  --color-surface:      #111316;
-  --color-surface-2:    #16191D;
-  --color-surface-3:    #1C2025;
-  --color-surface-4:    #2A3038;
+  /* Color scheme: dark (default) */
+  --bg:           #0A0B0D;
+  --bg-elev:      #111316;
+  --bg-elev-2:    #16191D;
+  --bg-hover:     #1C2025;
+  --panel:        #0F1114;
+  --border:       #1F242B;
+  --border-strong:#2A3038;
+  --text:         #E6E8EB;
+  --text-dim:     #9BA3AE;
+  --text-faint:   #5B6270;
+  --text-muted:   #6E7685;
 
-  /* Borders */
-  --color-border:        #1F242B;
-  --color-border-strong: #2A3038;
+  /* Accent — amber */
+  --accent:       #F5A524;
+  --accent-dim:   #3A2A0E;
+  --accent-glow:  rgba(245, 165, 36, 0.12);
+  --accent-text:  #0A0B0D;
 
-  /* Text */
-  --color-text:         #E6E8EB;
-  --color-text-muted:   #9BA3AE;
-  --color-text-subtle:  #6E7685;
+  /* Semantic */
+  --ok:      #3DD68C;
+  --ok-dim:  #0F2A1F;
+  --warn:    #F5A524;
+  --warn-dim:#3A2A0E;
+  --err:     #FF6A6A;
+  --err-dim: #2F1618;
+  --info:    #6AA8FF;
+  --info-dim:#10223B;
+  --purple:  #B980F0;
 
-  /* Brand — amber */
-  --color-primary:        #F5A524;
-  --color-primary-hover:  #D48E1A;
-  --color-primary-subtle: #3A2A0E;
-  --color-primary-light:  #FDF0D4;
-
-  /* Semantic — success */
-  --color-success:        #3DD68C;
-  --color-success-subtle: #0F2A1F;
-  --color-success-text:   #3DD68C;
-
-  /* Semantic — warning (uses amber, same as primary) */
-  --color-warning:        #F5A524;
-  --color-warning-subtle: #3A2A0E;
-  --color-warning-text:   #FDF0D4;
-
-  /* Semantic — danger */
-  --color-danger:         #FF6A6A;
-  --color-danger-subtle:  #2F1618;
-  --color-danger-text:    #FF6A6A;
-  --color-danger-hover:   #E05555;
-
-  /* Semantic — info */
-  --color-info:           #6AA8FF;
-  --color-info-subtle:    #10223B;
-
-  /* Run statuses */
-  --color-pending:        #9BA3AE;
-  --color-running:        #6AA8FF;
-  --color-running-subtle: #10223B;
-  --color-completed:      #3DD68C;
-  --color-failed:         #FF6A6A;
-  --color-cancelled:      #6E7685;
-
-  /* Layout */
-  --sidebar-width:    244px;
-  --topbar-height:    56px;
-
-  /* Radius */
-  --radius-sm:  0.25rem;
-  --radius:     0.5rem;
-  --radius-lg:  0.75rem;
-  --radius-xl:  1rem;
-
-  /* Shadows */
-  --shadow-sm:  0 1px 2px rgba(0,0,0,0.4);
-  --shadow:     0 2px 6px rgba(0,0,0,0.4);
-  --shadow-md:  0 4px 12px rgba(0,0,0,0.5);
-  --shadow-lg:  0 8px 24px rgba(0,0,0,0.6);
-  --shadow-xl:  0 16px 40px rgba(0,0,0,0.7);
+  /* Density */
+  --row-h:        32px;
+  --row-h-compact:26px;
+  --pad:    16px;
+  --pad-sm: 12px;
+  --pad-xs:  8px;
+  --gap:    12px;
 
   /* Typography */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --sans: "Inter Tight", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
-  /* Transitions */
-  --transition:      0.15s ease;
-  --transition-slow: 0.25s ease;
+  /* Radii */
+  --r-sm: 4px;
+  --r:    6px;
+  --r-lg: 10px;
+
+  /* Legacy aliases — used by older views not yet ported to the new tokens */
+  --color-bg:           var(--bg);
+  --color-surface:      var(--bg-elev);
+  --color-surface-2:    var(--bg-elev-2);
+  --color-surface-3:    var(--bg-hover);
+  --color-surface-4:    var(--border-strong);
+  --color-border:       var(--border);
+  --color-border-strong:var(--border-strong);
+  --color-text:         var(--text);
+  --color-text-muted:   var(--text-dim);
+  --color-text-subtle:  var(--text-faint);
+  --color-primary:      var(--accent);
+  --color-primary-hover:  #D48E1A;
+  --color-primary-subtle: var(--accent-dim);
+  --color-primary-light:  #FDF0D4;
+  --color-success:      var(--ok);
+  --color-success-subtle:var(--ok-dim);
+  --color-success-text: var(--ok);
+  --color-danger:       var(--err);
+  --color-danger-subtle:var(--err-dim);
+  --color-danger-text:  var(--err);
+  --color-danger-hover: #E05555;
+  --color-warning:      var(--warn);
+  --color-warning-subtle:var(--warn-dim);
+  --color-warning-text: #FDF0D4;
+  --color-info:         var(--info);
+  --color-info-subtle:  var(--info-dim);
+  --color-running:      var(--info);
+  --color-running-subtle:var(--info-dim);
+  --color-pending:      var(--text-dim);
+  --color-completed:    var(--ok);
+  --color-failed:       var(--err);
+  --color-cancelled:    var(--text-faint);
+  --sidebar-width:    212px;
+  --topbar-height:    48px;
+  --radius-sm: var(--r-sm);
+  --radius:    var(--r);
+  --radius-lg: var(--r-lg);
+  --radius-xl: 14px;
+  --font-sans: var(--sans);
+  --font-mono: var(--mono);
+  --transition:      0.1s ease;
+  --transition-slow: 0.2s ease;
+}
+
+[data-theme="light"] {
+  --bg:      #FAFAF7;
+  --bg-elev: #FFFFFF;
+  --bg-elev-2:#F4F4EF;
+  --bg-hover:#EFEEE8;
+  --panel:   #FFFFFF;
+  --border:  #E6E4DD;
+  --border-strong:#D4D1C7;
+  --text:    #141518;
+  --text-dim:#4B5260;
+  --text-faint:#8C93A0;
+  --text-muted:#6E7685;
+  --accent-dim:#FDF0D4;
+  --accent-glow:rgba(245, 165, 36, 0.18);
+  --ok-dim:  #DFF5E8;
+  --warn-dim:#FDF0D4;
+  --err-dim: #FDE2E2;
+  --info-dim:#DDEBFF;
+}
+
+[data-density="compact"] {
+  --row-h: 26px;
+  --pad:   12px;
+  --pad-sm: 8px;
+  --pad-xs: 6px;
+  --gap:    8px;
+}
+
+/* ── Global primitives (shared across all views) ── */
+
+.hstack  { display: flex; align-items: center; gap: var(--gap); }
+.vstack  { display: flex; flex-direction: column; gap: var(--gap); }
+.spacer  { flex: 1; }
+.mono    { font-family: var(--mono); font-feature-settings: "zero", "ss01"; }
+.dim     { color: var(--text-dim); }
+.faint   { color: var(--text-faint); }
+.accent  { color: var(--accent); }
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  background: var(--bg-elev);
+}
+.chip .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.chip.ok   { color: var(--ok);   background: var(--ok-dim);   border-color: transparent; }
+.chip.warn { color: var(--warn); background: var(--warn-dim); border-color: transparent; }
+.chip.err  { color: var(--err);  background: var(--err-dim);  border-color: transparent; }
+.chip.info { color: var(--info); background: var(--info-dim); border-color: transparent; }
+.chip.accent{color: var(--accent);background:var(--accent-dim);border-color:transparent; }
+
+.kbd {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  padding: 2px 5px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-elev);
+  line-height: 1;
+  display: inline-block;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: var(--r);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 12px;
+  font-family: var(--sans);
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+}
+.btn:hover { background: var(--bg-hover); border-color: var(--border-strong); }
+.btn.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 500; }
+.btn.primary:hover { filter: brightness(1.05); }
+.btn.ghost   { background: transparent; border-color: transparent; color: var(--text-dim); }
+.btn.ghost:hover { background: var(--bg-hover); color: var(--text); border-color: transparent; }
+
+.input {
+  height: 28px;
+  padding: 0 10px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text);
+  font-size: 12px;
+  outline: none;
+  font-family: var(--sans);
+}
+.input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+
+/* ── Animations ── */
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.85); }
+}
+.live-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--ok);
+  animation: pulse-dot 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200px 0; }
+  100% { background-position:  200px 0; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

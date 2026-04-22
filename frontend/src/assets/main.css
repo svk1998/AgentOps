@@ -11,13 +11,18 @@ html { color-scheme: dark; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: var(--sans);
+  font-family: "Inter Tight", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: 13px;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
   font-feature-settings: "ss01", "cv11";
   overflow: hidden;
 }
+
+/* Ensure all nested elements inherit the sans stack (defensive — prevents any
+   user-agent default from reverting to serif for headings/tables/etc.) */
+body, body * { font-family: inherit; }
+.mono, .mono * { font-family: var(--mono) !important; }
 
 #app { height: 100vh; overflow: hidden; }
 

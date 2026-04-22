@@ -14,7 +14,7 @@ export const routes = [
     children: [
       { path: '', redirect: '/dashboard' },
 
-      // Dashboard
+      // Overview
       {
         path: 'dashboard',
         name: 'Dashboard',
@@ -22,78 +22,54 @@ export const routes = [
         meta: { requiresAuth: true, title: 'Dashboard' }
       },
 
-      // Agents
+      // Registry
       {
-        path: 'agents',
-        name: 'Agents',
-        component: () => import('@/modules/agents/views/AgentsView.vue'),
+        path: 'registry/agents',
+        name: 'RegistryAgents',
+        component: () => import('@/modules/registry/views/AgentsView.vue'),
         meta: { requiresAuth: true, title: 'Agents' }
       },
+
+      // Evaluate
       {
-        path: 'agents/:id',
-        name: 'AgentDetail',
-        component: () => import('@/modules/agents/views/AgentDetailView.vue'),
-        meta: { requiresAuth: true, title: 'Agent Detail' }
+        path: 'evaluate/datasets',
+        name: 'Datasets',
+        component: () => import('@/modules/evaluate/views/DatasetsView.vue'),
+        meta: { requiresAuth: true, title: 'Datasets' }
+      },
+      {
+        path: 'evaluate/runs',
+        name: 'EvalRuns',
+        component: () => import('@/modules/evaluate/views/EvalRunsView.vue'),
+        meta: { requiresAuth: true, title: 'Eval Runs' }
+      },
+      {
+        path: 'evaluate/playground',
+        name: 'Playground',
+        component: () => import('@/modules/evaluate/views/PlaygroundView.vue'),
+        meta: { requiresAuth: true, title: 'Playground' }
       },
 
-      // Runs
+      // Observe
       {
-        path: 'runs',
-        name: 'Runs',
-        component: () => import('@/modules/runs/views/RunsView.vue'),
-        meta: { requiresAuth: true, title: 'Runs' }
-      },
-      {
-        path: 'runs/:id',
-        name: 'RunDetail',
-        component: () => import('@/modules/runs/views/RunDetailView.vue'),
-        meta: { requiresAuth: true, title: 'Run Detail' }
+        path: 'analytics',
+        name: 'Analytics',
+        component: () => import('@/modules/analytics/views/AnalyticsView.vue'),
+        meta: { requiresAuth: true, title: 'Analytics' }
       },
 
-      // Workflows (placeholder — full editor coming soon)
-      {
-        path: 'workflows',
-        name: 'Workflows',
-        component: () => import('@/modules/workflows/views/WorkflowsView.vue'),
-        meta: { requiresAuth: true, title: 'Workflows' }
-      },
-
-      // Tools
-      {
-        path: 'tools',
-        name: 'Tools',
-        component: () => import('@/modules/tools/views/ToolsView.vue'),
-        meta: { requiresAuth: true, title: 'Tools' }
-      },
-
-      // Models
-      {
-        path: 'models',
-        name: 'Models',
-        component: () => import('@/modules/models/views/ModelsView.vue'),
-        meta: { requiresAuth: true, title: 'Models' }
-      },
-
-      // Prompt Optimizer
-      {
-        path: 'prompt-optimizer',
-        name: 'PromptOptimizer',
-        component: () => import('@/modules/prompt-optimizer/views/PromptOptimizerView.vue'),
-        meta: { requiresAuth: true, title: 'Prompt Optimizer' }
-      },
-      {
-        path: 'prompt-optimizer/history',
-        name: 'PromptOptimizerHistory',
-        component: () => import('@/modules/prompt-optimizer/views/RunHistoryView.vue'),
-        meta: { requiresAuth: true, title: 'Optimizer History' }
-      },
-
-      // Users (admin)
+      // Admin
       {
         path: 'users',
         name: 'Users',
         component: () => import('@/modules/users/views/UsersView.vue'),
         meta: { requiresAuth: true, requiresRole: 'admin', title: 'Users' }
+      },
+      {
+        path: 'settings',
+        name: 'Settings',
+        component: () => import('@/modules/settings/views/SettingsView.vue'),
+        meta: { requiresAuth: true, requiresRole: 'admin', title: 'Settings' }
       },
     ]
   },

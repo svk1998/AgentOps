@@ -1,0 +1,81 @@
+/* ── AgentOps Design Tokens ─────────────────────────────────────────────────
+ * Single source of truth for all color and spacing tokens.
+ * All components import these via main.css.
+ * Based on the AgentOps standalone.html amber/neutral-dark palette.
+ */
+:root {
+  /* Backgrounds */
+  --color-bg:           #0A0B0D;
+  --color-surface:      #111316;
+  --color-surface-2:    #16191D;
+  --color-surface-3:    #1C2025;
+  --color-surface-4:    #2A3038;
+
+  /* Borders */
+  --color-border:        #1F242B;
+  --color-border-strong: #2A3038;
+
+  /* Text */
+  --color-text:         #E6E8EB;
+  --color-text-muted:   #9BA3AE;
+  --color-text-subtle:  #6E7685;
+
+  /* Brand — amber */
+  --color-primary:        #F5A524;
+  --color-primary-hover:  #D48E1A;
+  --color-primary-subtle: #3A2A0E;
+  --color-primary-light:  #FDF0D4;
+
+  /* Semantic — success */
+  --color-success:        #3DD68C;
+  --color-success-subtle: #0F2A1F;
+  --color-success-text:   #3DD68C;
+
+  /* Semantic — warning (uses amber, same as primary) */
+  --color-warning:        #F5A524;
+  --color-warning-subtle: #3A2A0E;
+  --color-warning-text:   #FDF0D4;
+
+  /* Semantic — danger */
+  --color-danger:         #FF6A6A;
+  --color-danger-subtle:  #2F1618;
+  --color-danger-text:    #FF6A6A;
+  --color-danger-hover:   #E05555;
+
+  /* Semantic — info */
+  --color-info:           #6AA8FF;
+  --color-info-subtle:    #10223B;
+
+  /* Run statuses */
+  --color-pending:        #9BA3AE;
+  --color-running:        #6AA8FF;
+  --color-running-subtle: #10223B;
+  --color-completed:      #3DD68C;
+  --color-failed:         #FF6A6A;
+  --color-cancelled:      #6E7685;
+
+  /* Layout */
+  --sidebar-width:    244px;
+  --topbar-height:    56px;
+
+  /* Radius */
+  --radius-sm:  0.25rem;
+  --radius:     0.5rem;
+  --radius-lg:  0.75rem;
+  --radius-xl:  1rem;
+
+  /* Shadows */
+  --shadow-sm:  0 1px 2px rgba(0,0,0,0.4);
+  --shadow:     0 2px 6px rgba(0,0,0,0.4);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.5);
+  --shadow-lg:  0 8px 24px rgba(0,0,0,0.6);
+  --shadow-xl:  0 16px 40px rgba(0,0,0,0.7);
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  /* Transitions */
+  --transition:      0.15s ease;
+  --transition-slow: 0.25s ease;
+}

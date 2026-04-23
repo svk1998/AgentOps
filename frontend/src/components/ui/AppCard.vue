@@ -1,5 +1,6 @@
 <template>
-  <div :class="['card', { 'card--hoverable': hoverable, 'card--no-pad': !padding }]"
+  <div
+:class="['card', { 'card--hoverable': hoverable, 'card--no-pad': !padding }]"
        :style="borderAccent ? `border-left: 3px solid ${borderAccent}` : ''">
     <div v-if="$slots.header" class="card__header">
       <slot name="header" />

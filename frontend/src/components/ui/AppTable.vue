@@ -35,8 +35,8 @@
         </tr>
         <!-- Data rows -->
         <tr
-          v-else
           v-for="(row, rowIdx) in rows"
+          v-else
           :key="row.id ?? rowIdx"
           :class="{ 'row--clickable': !!onRowClick }"
           @click="onRowClick && onRowClick(row)"

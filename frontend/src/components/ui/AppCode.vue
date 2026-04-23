@@ -1,6 +1,6 @@
 <template>
   <div class="code-wrap">
-    <button v-if="copyable" class="code-copy" @click="copy" :title="copied ? 'Copied!' : 'Copy'">
+    <button v-if="copyable" class="code-copy" :title="copied ? 'Copied!' : 'Copy'" @click="copy">
       {{ copied ? '✓' : '⎘' }}
     </button>
     <pre class="code-block"><code>{{ content }}</code></pre>

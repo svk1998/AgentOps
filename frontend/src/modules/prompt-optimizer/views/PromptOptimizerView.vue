@@ -100,7 +100,7 @@
             <span v-if="stopLoading">Stopping...</span>
             <span v-else>Stop</span>
           </button>
-          <button class="btn-ghost" @click="handleReset" :disabled="isRunning">Reset</button>
+          <button class="btn-ghost" :disabled="isRunning" @click="handleReset">Reset</button>
         </div>
       </div>
 
@@ -132,7 +132,7 @@
             v-for="(iter, index) in run.iterations"
             :key="iter.id ?? index"
             :iteration="iter"
-            :isLatest="index === run.iterations.length - 1 && isRunning"
+            :is-latest="index === run.iterations.length - 1 && isRunning"
           />
 
           <!-- Running pulse at the bottom -->

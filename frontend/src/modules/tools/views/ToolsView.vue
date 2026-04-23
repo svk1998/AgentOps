@@ -51,7 +51,7 @@
       </div>
 
       <!-- Loading skeletons -->
-      <div v-if="loading" v-for="n in 3" :key="n" class="tool-skeleton" />
+      <div v-for="n in 3" v-if="loading" :key="n" class="tool-skeleton" />
     </div>
 
     <!-- Form modal -->
@@ -70,7 +70,7 @@
         />
         <div class="form-toggle">
           <label class="toggle-label">
-            <input type="checkbox" v-model="form.is_active" />
+            <input v-model="form.is_active" type="checkbox" />
             Active
           </label>
         </div>

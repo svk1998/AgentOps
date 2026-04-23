@@ -1,11 +1,47 @@
-from app.models.agent import Agent
-from app.models.pipeline import Pipeline
-from app.models.prompt_optimization import PromptOptimizationIteration, PromptOptimizationRun
-from app.models.run import Run, RunLog
-from app.models.tool import Tool
-from app.models.user import User
+from app.models.agent import Agent, AgentStatus, AgentType, AgentVersion
+from app.models.dataset import (
+    DatasetItemStatus,
+    DatasetVersion,
+    EvalDataset,
+    EvalDatasetItem,
+    RagEvalDataset,
+    RagEvalItem,
+)
+from app.models.evaluation import (
+    AuditLog,
+    EvalRun,
+    EvalRunResult,
+    EvalRunStatus,
+    ManualEvalItem,
+    ManualEvalSession,
+    ManualSessionStatus,
+    ManualVerdict,
+    RagEvalResultDetail,
+    SeverityLevel,
+)
+from app.models.user import User, UserRole
 
 __all__ = [
-    "User", "Agent", "Run", "RunLog", "Tool", "Pipeline",
-    "PromptOptimizationRun", "PromptOptimizationIteration",
+    "AuditLog",
+    "Agent",
+    "AgentStatus",
+    "AgentType",
+    "AgentVersion",
+    "DatasetItemStatus",
+    "DatasetVersion",
+    "EvalDataset",
+    "EvalDatasetItem",
+    "EvalRun",
+    "EvalRunResult",
+    "EvalRunStatus",
+    "ManualEvalItem",
+    "ManualEvalSession",
+    "ManualSessionStatus",
+    "ManualVerdict",
+    "RagEvalDataset",
+    "RagEvalItem",
+    "RagEvalResultDetail",
+    "SeverityLevel",
+    "User",
+    "UserRole",
 ]

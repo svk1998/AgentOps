@@ -20,9 +20,9 @@ api.interceptors.response.use(
     const status = error.response?.status
 
     if (status === 401) {
-      // Token expired or invalid — log out and redirect to login
+      // Token expired or invalid — silent auto-logout (no user action)
       const auth = useAuthStore()
-      auth.logout()
+      auth.logout({ silent: true })
     }
 
     if (status === 403) {

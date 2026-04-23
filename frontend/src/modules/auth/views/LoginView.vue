@@ -30,6 +30,14 @@
           <h1 class="login-title">Sign in</h1>
         </div>
 
+        <!-- Signed-out banner — appears after user-initiated logout -->
+        <div v-if="reason === 'signed-out'" class="login-banner mono">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 8l3 3 7-7"/>
+          </svg>
+          Signed out. See you again.
+        </div>
+
         <form class="login-form" @submit.prevent="handleLogin">
           <div class="field">
             <label for="email" class="field-label mono">Email</label>
@@ -113,7 +121,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
@@ -127,6 +135,7 @@ const error = ref('')
 const showPassword = ref(false)
 
 const apiBase = import.meta.env.VITE_API_BASE_URL || '/api/v1'
+const reason = computed(() => route.query.reason || null)
 
 async function handleLogin() {
   loading.value = true
@@ -256,6 +265,18 @@ async function handleLogin() {
   border: 1px solid var(--err);
   border-radius: var(--r);
   color: var(--err);
+  font-size: 11.5px;
+}
+
+.login-banner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--ok-dim);
+  border: 1px solid var(--ok);
+  border-radius: var(--r);
+  color: var(--ok);
   font-size: 11.5px;
 }
 

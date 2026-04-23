@@ -45,18 +45,63 @@
         </template>
       </nav>
 
-      <!-- Footer -->
-      <div class="sidebar-footer">
-        <div v-show="!collapsed" class="user-row">
+      <!-- Footer — user menu -->
+      <div class="sidebar-footer" :class="{ 'sidebar-footer--collapsed': collapsed }">
+        <button
+          class="user-trigger"
+          :class="{ 'user-trigger--open': userMenuOpen }"
+          :title="collapsed ? (auth.user?.full_name || auth.user?.email) : null"
+          @click="userMenuOpen = !userMenuOpen"
+        >
           <div class="user-avatar">{{ initials }}</div>
-          <div class="user-info">
-            <div class="user-name">{{ auth.user?.full_name || auth.user?.email }}</div>
-            <div class="user-role mono">{{ auth.user?.is_superuser ? 'admin' : 'member' }}</div>
-          </div>
-        </div>
-        <button class="btn ghost icon-btn" title="Sign out" @click="auth.logout">
-          <IconSignOut />
+          <template v-if="!collapsed">
+            <div class="user-info">
+              <div class="user-name">{{ auth.user?.full_name || auth.user?.email }}</div>
+              <div class="user-role mono">{{ auth.user?.is_superuser ? 'admin' : 'member' }}</div>
+            </div>
+            <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="user-chevron">
+              <path d="M4 10l4-4 4 4" />
+            </svg>
+          </template>
         </button>
+
+        <!-- Dropdown menu -->
+        <div v-if="userMenuOpen" class="user-menu" @click.stop>
+          <div class="user-menu-head">
+            <div class="user-avatar user-avatar--lg">{{ initials }}</div>
+            <div class="user-info">
+              <div class="user-name truncate">{{ auth.user?.full_name || auth.user?.email }}</div>
+              <div class="user-menu-email mono truncate">{{ auth.user?.email }}</div>
+            </div>
+            <Chip :variant="auth.user?.is_superuser ? 'accent' : null">
+              {{ auth.user?.role || (auth.user?.is_superuser ? 'admin' : 'member') }}
+            </Chip>
+          </div>
+
+          <div class="user-menu-divider" />
+
+          <RouterLink v-if="auth.user?.is_superuser" to="/users" class="user-menu-item" @click="closeUserMenu">
+            <IconUsers class="user-menu-icon" />
+            <span>Manage users</span>
+          </RouterLink>
+
+          <RouterLink v-if="auth.user?.is_superuser" to="/settings" class="user-menu-item" @click="closeUserMenu">
+            <IconSettings class="user-menu-icon" />
+            <span>Settings</span>
+          </RouterLink>
+
+          <div v-if="auth.user?.is_superuser" class="user-menu-divider" />
+
+          <button class="user-menu-item user-menu-item--danger" @click="handleLogout">
+            <IconSignOut class="user-menu-icon" />
+            <span>Sign out</span>
+            <span v-if="loggingOut" class="user-menu-spinner">
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="spin">
+                <path d="M14 8a6 6 0 1 1-6-6" stroke-linecap="round"/>
+              </svg>
+            </span>
+          </button>
+        </div>
       </div>
     </aside>
 
@@ -88,13 +133,43 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+
+import Chip from '@/components/primitives/Chip.vue'
 
 const auth = useAuthStore()
 const route = useRoute()
 const collapsed = ref(false)
+
+// ── User menu state ────────────────────────────────────────────────────────
+const userMenuOpen = ref(false)
+const loggingOut = ref(false)
+
+function closeUserMenu() { userMenuOpen.value = false }
+
+async function handleLogout() {
+  if (loggingOut.value) return
+  loggingOut.value = true
+  try {
+    await auth.logout()
+  } finally {
+    loggingOut.value = false
+    userMenuOpen.value = false
+  }
+}
+
+// Close the menu when clicking outside or on route change
+function onDocClick(e) {
+  if (!userMenuOpen.value) return
+  const footer = e.target.closest?.('.sidebar-footer')
+  if (!footer) userMenuOpen.value = false
+}
+onMounted(() => document.addEventListener('click', onDocClick))
+onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
+
+watch(() => route.path, () => { userMenuOpen.value = false })
 
 const initials = computed(() => {
   const name = auth.user?.full_name || auth.user?.email || ''
@@ -283,26 +358,36 @@ const breadcrumbs = computed(() => {
 .nav-label { flex: 1; }
 .nav-shortcut { margin-left: auto; flex-shrink: 0; }
 
-/* Footer */
+/* Footer — user menu */
 .sidebar-footer {
+  position: relative;
   border-top: 1px solid var(--border);
-  padding: 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  padding: 8px;
   flex-shrink: 0;
 }
-.user-row {
+.sidebar-footer--collapsed { display: flex; justify-content: center; }
+
+.user-trigger {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: var(--r);
+  background: transparent;
+  border: none;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.1s;
 }
+.user-trigger:hover { background: var(--bg-hover); }
+.user-trigger--open { background: var(--bg-elev-2); }
+.sidebar-footer--collapsed .user-trigger { width: auto; padding: 4px; }
+
 .user-avatar {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: var(--accent-dim);
   color: var(--accent);
@@ -314,6 +399,8 @@ const breadcrumbs = computed(() => {
   justify-content: center;
   flex-shrink: 0;
 }
+.user-avatar--lg { width: 34px; height: 34px; font-size: 12px; }
+
 .user-info { min-width: 0; flex: 1; }
 .user-name {
   font-size: 12px;
@@ -327,13 +414,78 @@ const breadcrumbs = computed(() => {
   font-size: 10.5px;
   color: var(--text-faint);
 }
-.icon-btn {
-  width: 26px;
-  height: 26px;
-  padding: 0;
-  justify-content: center;
+.user-chevron {
+  color: var(--text-faint);
+  transition: transform 0.15s;
   flex-shrink: 0;
 }
+.user-trigger--open .user-chevron { transform: rotate(180deg); }
+
+/* Dropdown menu — anchored above the trigger */
+.user-menu {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 8px;
+  right: 8px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 10;
+  animation: menuIn 0.12s ease;
+}
+.sidebar-footer--collapsed .user-menu {
+  left: calc(100% + 8px);
+  right: auto;
+  bottom: 8px;
+  width: 240px;
+}
+@keyframes menuIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+.user-menu-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 10px 8px;
+}
+.user-menu-email { font-size: 10.5px; color: var(--text-faint); }
+
+.user-menu-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+.user-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--r);
+  color: var(--text-dim);
+  font-size: 12.5px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  position: relative;
+}
+.user-menu-item:hover { background: var(--bg-hover); color: var(--text); }
+.user-menu-item--danger { color: var(--err); }
+.user-menu-item--danger:hover { background: var(--err-dim); color: var(--err); }
+.user-menu-icon { flex-shrink: 0; opacity: 0.85; }
+.user-menu-spinner { margin-left: auto; color: currentColor; display: inline-flex; }
+
+.spin { animation: spin 1s linear infinite; }
 
 /* ── Main ── */
 .main-wrapper {

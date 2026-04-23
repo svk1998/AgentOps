@@ -45,3 +45,15 @@ async def login(
 @router.get("/me", response_model=UserOut)
 async def me(current_user: User = Depends(get_current_user)):
     return current_user
+
+
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+async def logout(_: User = Depends(get_current_user)):
+    """Client-side logout for stateless JWT.
+
+    The token is discarded by the browser; this endpoint exists as a hook
+    so future session-tracking / token-blacklist logic can plug in without
+    touching frontend code. Requires a valid token so unauthenticated
+    requests can't spam the endpoint.
+    """
+    return None

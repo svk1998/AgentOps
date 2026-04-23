@@ -129,3 +129,15 @@ async def delete_user(
     # Soft delete — deactivate instead of hard-remove so historical audit links survive
     target.is_active = False
     await db.flush()
+
+
+@router.post("/{user_id}/reactivate", response_model=UserOut)
+async def reactivate_user(
+    user_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_current_superuser),
+):
+    target = await _get_user(db, user_id)
+    target.is_active = True
+    await db.flush()
+    return target

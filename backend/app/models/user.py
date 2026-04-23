@@ -1,6 +1,7 @@
 import enum
+from datetime import datetime
 
-from sqlalchemy import Boolean, Enum, String
+from sqlalchemy import Boolean, DateTime, Enum, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import UUIDBase
@@ -29,6 +30,9 @@ class User(UUIDBase):
         index=True,
     )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    last_login_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     @property
     def full_name(self) -> str | None:

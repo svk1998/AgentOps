@@ -17,21 +17,24 @@
       </div>
       <div class="page-actions">
         <div class="search-wrap">
-          <svg class="search-icon" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
-            <circle cx="7" cy="7" r="4.5" /><path d="M10.5 10.5L14 14" />
-          </svg>
+          <Search :size="12" :stroke-width="1.6" class="search-icon" />
           <input v-model="search" class="input search-input" placeholder="Search users…" />
         </div>
         <select v-model="filters.role" class="input">
           <option value="">All roles</option>
           <option v-for="r in ROLES" :key="r" :value="r">{{ r }}</option>
         </select>
+        <select v-model="filters.is_active" class="input">
+          <option value="">Any status</option>
+          <option value="true">Active only</option>
+          <option value="false">Inactive only</option>
+        </select>
         <button class="btn ghost" :disabled="loading" @click="load">
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" :class="loading ? 'spin' : ''"><path d="M14 8a6 6 0 1 1-6-6c1.9 0 3.6 0.9 4.7 2.3"/><path d="M14 2v3h-3"/></svg>
+          <RefreshCw :size="12" :stroke-width="1.75" :class="loading ? 'spin' : ''" />
           Refresh
         </button>
         <button class="btn primary" @click="openCreate">
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+          <Plus :size="12" :stroke-width="2" />
           New user
         </button>
       </div>
@@ -54,7 +57,10 @@
         <template #cell-display_name="{ row }">
           <div class="cell-name">
             <div class="user-avatar">{{ initials(row) }}</div>
-            <span class="mono" style="color:var(--text)">{{ row.display_name || row.email.split('@')[0] }}</span>
+            <div class="cell-name-text">
+              <span class="mono" style="color:var(--text)">{{ row.display_name || row.email.split('@')[0] }}</span>
+              <span v-if="row.id === auth.user?.id" class="mono faint self-tag">you</span>
+            </div>
           </div>
         </template>
         <template #cell-email="{ value }">
@@ -63,18 +69,30 @@
         <template #cell-role="{ value }">
           <Chip :variant="roleVariant(value)">{{ value }}</Chip>
         </template>
+        <template #cell-last_login_at="{ value }">
+          <span v-if="value" class="mono faint" style="font-size:11px" :title="formatDateTime(value)">
+            {{ formatRelativeTime(value) }}
+          </span>
+          <span v-else class="mono" style="color:var(--text-faint); font-size:11px">never</span>
+        </template>
+        <template #cell-created_at="{ value }">
+          <span class="mono faint" style="font-size:11px" :title="formatDateTime(value)">
+            {{ formatRelativeTime(value) }}
+          </span>
+        </template>
         <template #cell-actions="{ row }">
           <div class="row-actions" @click.stop>
-            <button class="btn ghost" style="height:24px; font-size:11px" @click="openEdit(row)">Edit</button>
+            <button class="btn ghost row-btn" @click="openEdit(row)">Edit</button>
             <button
-              v-if="row.id !== auth.user?.id"
-              class="btn ghost danger"
-              style="height:24px; font-size:11px"
-              :disabled="!row.is_active"
+              v-if="row.is_active && row.id !== auth.user?.id"
+              class="btn ghost row-btn danger"
               @click="confirmDeactivate(row)"
-            >
-              {{ row.is_active ? 'Deactivate' : 'Inactive' }}
-            </button>
+            >Deactivate</button>
+            <button
+              v-else-if="!row.is_active"
+              class="btn ghost row-btn success"
+              @click="reactivate(row)"
+            >Reactivate</button>
           </div>
         </template>
       </DataTable>
@@ -92,7 +110,7 @@
               <h2 class="modal-title">{{ editing ? (editing.display_name || editing.email) : 'Create user' }}</h2>
             </div>
             <button class="btn ghost icon-btn" aria-label="Close" @click="closeModal">
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+              <X :size="13" :stroke-width="1.75" />
             </button>
           </div>
 
@@ -139,9 +157,7 @@
             </div>
 
             <div v-if="modalError" class="form-error mono">
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-                <circle cx="8" cy="8" r="6.5"/><path d="M8 5v3.5"/><circle cx="8" cy="11" r="0.6" fill="currentColor"/>
-              </svg>
+              <CircleAlert :size="12" :stroke-width="1.75" />
               {{ modalError }}
             </div>
 
@@ -160,8 +176,11 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { Search, RefreshCw, Plus, X, CircleAlert } from 'lucide-vue-next'
+
 import { userService } from '@/services/userService'
 import { useAuthStore } from '@/stores/auth'
+import { formatRelativeTime, formatDateTime } from '@/utils/format'
 
 import Panel from '@/components/primitives/Panel.vue'
 import Chip from '@/components/primitives/Chip.vue'
@@ -175,11 +194,11 @@ const users = ref([])
 const loading = ref(false)
 const error = ref('')
 const search = ref('')
-const filters = ref({ role: '' })
+const filters = ref({ role: '', is_active: '' })
 
 // ── Modal state ──
 const modalOpen = ref(false)
-const editing = ref(null) // user being edited; null for create
+const editing = ref(null)
 const form = ref(newForm())
 const modalError = ref('')
 const submitting = ref(false)
@@ -189,11 +208,13 @@ function newForm() {
 }
 
 const cols = [
-  { key: 'status',       label: 'Status', width: '120px' },
-  { key: 'display_name', label: 'Name',   width: '2fr' },
-  { key: 'email',        label: 'Email',  width: '2fr' },
-  { key: 'role',         label: 'Role',   width: '120px' },
-  { key: 'actions',      label: '',       width: '180px', align: 'right' },
+  { key: 'status',         label: 'Status',     width: '120px' },
+  { key: 'display_name',   label: 'Name',       width: '1.5fr' },
+  { key: 'email',          label: 'Email',      width: '1.8fr' },
+  { key: 'role',           label: 'Role',       width: '110px' },
+  { key: 'last_login_at',  label: 'Last login', width: '110px', align: 'right' },
+  { key: 'created_at',     label: 'Joined',     width: '100px', align: 'right' },
+  { key: 'actions',        label: '',           width: '200px', align: 'right' },
 ]
 
 const filtered = computed(() => {
@@ -229,6 +250,7 @@ async function load() {
   try {
     const params = {}
     if (filters.value.role) params.role = filters.value.role
+    if (filters.value.is_active !== '') params.is_active = filters.value.is_active
     const { data } = await userService.list(params)
     users.value = Array.isArray(data) ? data : (data?.items ?? [])
   } catch (e) {
@@ -307,6 +329,15 @@ async function confirmDeactivate(u) {
   }
 }
 
+async function reactivate(u) {
+  try {
+    await userService.reactivate(u.id)
+    await load()
+  } catch (e) {
+    error.value = e?.response?.data?.detail || e?.message || 'Reactivate failed'
+  }
+}
+
 onMounted(load)
 </script>
 
@@ -329,6 +360,16 @@ select.input { cursor: pointer; }
 
 .cell-status { display: flex; align-items: center; gap: 8px; }
 .cell-name { display: inline-flex; align-items: center; gap: 10px; }
+.cell-name-text { display: inline-flex; align-items: baseline; gap: 6px; }
+.self-tag {
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text-faint);
+}
 
 .user-avatar {
   width: 22px;
@@ -346,8 +387,11 @@ select.input { cursor: pointer; }
 }
 
 .row-actions { display: flex; gap: 4px; justify-content: flex-end; }
+.row-btn { height: 24px; font-size: 11px; padding: 0 8px; }
 .btn.ghost.danger { color: var(--err); }
 .btn.ghost.danger:hover { background: var(--err-dim); color: var(--err); }
+.btn.ghost.success { color: var(--ok); }
+.btn.ghost.success:hover { background: var(--ok-dim); color: var(--ok); }
 
 .error-banner {
   background: var(--err-dim);

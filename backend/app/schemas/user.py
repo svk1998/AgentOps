@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, Field
@@ -29,6 +30,9 @@ class UserOut(BaseModel):
     role: UserRole
     is_active: bool
     is_superuser: bool = Field(description="Compatibility flag derived from role == admin")
+    last_login_at: datetime | None = None
+    created_at: datetime
+    updated_at: datetime
 
     model_config = {"from_attributes": True}
 

@@ -66,10 +66,24 @@ export const routes = [
         meta: { requiresAuth: true, requiresRole: 'admin', title: 'Users' }
       },
       {
+        path: 'users/:id',
+        name: 'UserDetail',
+        component: () => import('@/modules/users/views/UserDetailView.vue'),
+        meta: { requiresAuth: true, requiresRole: 'admin', title: 'User Detail' }
+      },
+      {
         path: 'settings',
         name: 'Settings',
         component: () => import('@/modules/settings/views/SettingsView.vue'),
         meta: { requiresAuth: true, requiresRole: 'admin', title: 'Settings' }
+      },
+
+      // Self — any authenticated user can manage their own profile
+      {
+        path: 'account',
+        name: 'Account',
+        component: () => import('@/modules/account/views/AccountView.vue'),
+        meta: { requiresAuth: true, title: 'Your account' }
       },
     ]
   },

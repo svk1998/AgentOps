@@ -75,6 +75,12 @@
 
           <div class="user-menu-divider" />
 
+          <!-- Your account — available to every authenticated user -->
+          <RouterLink to="/account" class="user-menu-item" @click="closeUserMenu">
+            <UserCog :size="14" :stroke-width="1.75" class="user-menu-icon" />
+            <span>Your account</span>
+          </RouterLink>
+
           <!-- Theme toggle — always visible -->
           <button class="user-menu-item" @click="theme.toggle()">
             <component :is="theme.theme === 'dark' ? Sun : Moon" :size="14" :stroke-width="1.75" class="user-menu-icon" />
@@ -140,7 +146,7 @@ import { RouterLink, RouterView, useRoute } from 'vue-router'
 import {
   LayoutGrid, Radio, Database, CheckCircle2, Workflow, LineChart,
   Users, Settings, Home, LogOut, ChevronLeft, ChevronRight, ChevronUp,
-  Sun, Moon,
+  Sun, Moon, UserCog,
 } from 'lucide-vue-next'
 
 import { useAuthStore } from '@/stores/auth'
@@ -235,7 +241,7 @@ const LABELS = {
   dashboard: 'Dashboard', registry: 'Registry', agents: 'Agents',
   evaluate: 'Evaluate', datasets: 'Datasets', runs: 'Eval Runs',
   playground: 'Playground', analytics: 'Analytics',
-  settings: 'Settings', users: 'Users',
+  settings: 'Settings', users: 'Users', account: 'Your account',
 }
 
 const breadcrumbs = computed(() => {

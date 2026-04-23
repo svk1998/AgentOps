@@ -19,10 +19,7 @@
           :title="collapsed ? 'Expand' : 'Collapse'"
           @click="collapsed = !collapsed"
         >
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-            <path v-if="!collapsed" d="M10 4L6 8l4 4" />
-            <path v-else d="M6 4l4 4-4 4" />
-          </svg>
+          <component :is="collapsed ? ChevronRight : ChevronLeft" :size="14" :stroke-width="1.75" />
         </button>
       </div>
 
@@ -38,7 +35,7 @@
             active-class="nav-row--active"
             :title="collapsed ? item.label : undefined"
           >
-            <component :is="item.icon" class="nav-icon" />
+            <component :is="item.icon" :size="15" :stroke-width="1.75" class="nav-icon" />
             <span v-show="!collapsed" class="nav-label">{{ item.label }}</span>
             <span v-if="!collapsed && item.shortcut" class="kbd nav-shortcut">{{ item.shortcut }}</span>
           </RouterLink>
@@ -59,9 +56,7 @@
               <div class="user-name">{{ auth.user?.full_name || auth.user?.email }}</div>
               <div class="user-role mono">{{ auth.user?.is_superuser ? 'admin' : 'member' }}</div>
             </div>
-            <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="user-chevron">
-              <path d="M4 10l4-4 4 4" />
-            </svg>
+            <ChevronUp :size="12" :stroke-width="1.75" class="user-chevron" />
           </template>
         </button>
 
@@ -80,20 +75,27 @@
 
           <div class="user-menu-divider" />
 
+          <!-- Theme toggle — always visible -->
+          <button class="user-menu-item" @click="theme.toggle()">
+            <component :is="theme.theme === 'dark' ? Sun : Moon" :size="14" :stroke-width="1.75" class="user-menu-icon" />
+            <span>{{ theme.theme === 'dark' ? 'Switch to light' : 'Switch to dark' }}</span>
+            <span class="user-menu-hint mono">{{ theme.theme }}</span>
+          </button>
+
           <RouterLink v-if="auth.user?.is_superuser" to="/users" class="user-menu-item" @click="closeUserMenu">
-            <IconUsers class="user-menu-icon" />
+            <Users :size="14" :stroke-width="1.75" class="user-menu-icon" />
             <span>Manage users</span>
           </RouterLink>
 
           <RouterLink v-if="auth.user?.is_superuser" to="/settings" class="user-menu-item" @click="closeUserMenu">
-            <IconSettings class="user-menu-icon" />
+            <Settings :size="14" :stroke-width="1.75" class="user-menu-icon" />
             <span>Settings</span>
           </RouterLink>
 
-          <div v-if="auth.user?.is_superuser" class="user-menu-divider" />
+          <div class="user-menu-divider" />
 
           <button class="user-menu-item user-menu-item--danger" @click="handleLogout">
-            <IconSignOut class="user-menu-icon" />
+            <LogOut :size="14" :stroke-width="1.75" class="user-menu-icon" />
             <span>Sign out</span>
             <span v-if="loggingOut" class="user-menu-spinner">
               <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="spin">
@@ -111,7 +113,7 @@
       <header class="topbar">
         <div class="breadcrumb">
           <RouterLink to="/dashboard" class="crumb-link">
-            <IconHome />
+            <Home :size="13" :stroke-width="1.75" />
           </RouterLink>
           <template v-for="(crumb, i) in breadcrumbs" :key="i">
             <span class="crumb-sep">›</span>
@@ -135,11 +137,19 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
+import {
+  LayoutGrid, Radio, Database, CheckCircle2, Workflow, LineChart,
+  Users, Settings, Home, LogOut, ChevronLeft, ChevronRight, ChevronUp,
+  Sun, Moon,
+} from 'lucide-vue-next'
+
 import { useAuthStore } from '@/stores/auth'
+import { useThemeStore } from '@/stores/theme'
 
 import Chip from '@/components/primitives/Chip.vue'
 
 const auth = useAuthStore()
+const theme = useThemeStore()
 const route = useRoute()
 const collapsed = ref(false)
 
@@ -176,46 +186,16 @@ const initials = computed(() => {
   return name.split(/[\s@]/).map(s => s[0]).filter(Boolean).slice(0, 2).join('').toUpperCase() || '?'
 })
 
-// ── Inline SVG icons ────────────────────────────────────────────────────────
-// Extracted from the AgentOps standalone bundle. 16x16 viewBox, 1.4 stroke,
-// round caps/joins — identical rendering to the design source.
-const svg = (paths) =>
-  `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`
-
-const IconFleet = {
-  template: svg(`<rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/>`),
-}
-const IconLive = {
-  template: svg(`<circle cx="8" cy="8" r="2"/><circle cx="8" cy="8" r="5"/><circle cx="8" cy="8" r="7.2" opacity="0.4"/>`),
-}
-const IconDatabase = {
-  template: svg(`<ellipse cx="8" cy="4" rx="6" ry="2"/><path d="M2 4v4c0 1.1 2.7 2 6 2s6-.9 6-2V4"/><path d="M2 8v4c0 1.1 2.7 2 6 2s6-.9 6-2V8"/>`),
-}
-const IconEval = {
-  template: svg(`<path d="M3 13l2-3 3 1 5-7"/><path d="M13 4h1v1"/>`),
-}
-const IconTrace = {
-  template: svg(`<path d="M2 4h12M2 8h8M2 12h5"/><circle cx="14" cy="4" r="1" fill="currentColor"/><circle cx="10" cy="8" r="1" fill="currentColor"/><circle cx="7" cy="12" r="1" fill="currentColor"/>`),
-}
-const IconChart = {
-  template: svg(`<path d="M2 12l3-4 3 2 4-6"/><path d="M2 14h12"/>`),
-}
-const IconUsers = {
-  template: svg(`<circle cx="6" cy="5" r="2.5"/><path d="M1 14c0-2.8 2.2-5 5-5s5 2.2 5 5"/><path d="M11 3.5c1.4 0 2.5 1.1 2.5 2.5S12.4 8.5 11 8.5M15 14c0-2.2-1.8-4-4-4"/>`),
-}
-const IconSettings = {
-  template: svg(`<circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.1 3.1l1.4 1.4M11.5 11.5l1.4 1.4M3.1 12.9l1.4-1.4M11.5 4.5l1.4-1.4"/>`),
-}
-
-// Icons at 13px for topbar / menu row
-const svg13 = (paths) =>
-  `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`
-
-const IconHome = {
-  template: svg13(`<path d="M2 6.5L8 2l6 4.5V14a1 1 0 01-1 1H3a1 1 0 01-1-1z"/><path d="M6 15V9h4v6"/>`),
-}
-const IconSignOut = {
-  template: svg13(`<path d="M6 3H3a1 1 0 00-1 1v8a1 1 0 001 1h3"/><path d="M10 11l4-3-4-3"/><path d="M6 8h8"/>`),
+// Icons — Lucide. Mapped to the Phase 1 nav vocabulary.
+const ICONS = {
+  dashboard: LayoutGrid,    // Fleet-style grid
+  agents:    Radio,         // concentric rings — live/registered
+  datasets:  Database,      // cylinder
+  evalRuns:  CheckCircle2,  // checkmark in circle
+  playground:Workflow,      // branching lines — review flow
+  analytics: LineChart,     // trend
+  users:     Users,
+  settings:  Settings,
 }
 
 // ── Navigation ────────────────────────────────────────────────────────────────
@@ -223,29 +203,29 @@ const navSections = computed(() => [
   {
     label: 'Platform',
     items: [
-      { to: '/dashboard',       icon: IconFleet, label: 'Dashboard', shortcut: '1' },
-      { to: '/registry/agents', icon: IconLive,  label: 'Agents',    shortcut: '2' },
+      { to: '/dashboard',       icon: ICONS.dashboard, label: 'Dashboard', shortcut: '1' },
+      { to: '/registry/agents', icon: ICONS.agents,    label: 'Agents',    shortcut: '2' },
     ],
   },
   {
     label: 'Evaluate',
     items: [
-      { to: '/evaluate/datasets',   icon: IconDatabase, label: 'Datasets',   shortcut: '3' },
-      { to: '/evaluate/runs',       icon: IconEval,     label: 'Eval Runs',  shortcut: '4' },
-      { to: '/evaluate/playground', icon: IconTrace,    label: 'Playground', shortcut: '5' },
+      { to: '/evaluate/datasets',   icon: ICONS.datasets,   label: 'Datasets',   shortcut: '3' },
+      { to: '/evaluate/runs',       icon: ICONS.evalRuns,   label: 'Eval Runs',  shortcut: '4' },
+      { to: '/evaluate/playground', icon: ICONS.playground, label: 'Playground', shortcut: '5' },
     ],
   },
   {
     label: 'Observe',
     items: [
-      { to: '/analytics', icon: IconChart, label: 'Analytics', shortcut: '6' },
+      { to: '/analytics', icon: ICONS.analytics, label: 'Analytics', shortcut: '6' },
     ],
   },
   ...(auth.user?.is_superuser ? [{
     label: 'Admin',
     items: [
-      { to: '/users',    icon: IconUsers,    label: 'Users',    shortcut: '7' },
-      { to: '/settings', icon: IconSettings, label: 'Settings', shortcut: '8' },
+      { to: '/users',    icon: ICONS.users,    label: 'Users',    shortcut: '7' },
+      { to: '/settings', icon: ICONS.settings, label: 'Settings', shortcut: '8' },
     ],
   }] : []),
 ])
@@ -494,6 +474,16 @@ const breadcrumbs = computed(() => {
 .user-menu-item--danger:hover { background: var(--err-dim); color: var(--err); }
 .user-menu-icon { flex-shrink: 0; opacity: 0.85; }
 .user-menu-spinner { margin-left: auto; color: currentColor; display: inline-flex; }
+.user-menu-hint {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--text-faint);
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  line-height: 1;
+  text-transform: lowercase;
+}
 
 .spin { animation: spin 1s linear infinite; }
 

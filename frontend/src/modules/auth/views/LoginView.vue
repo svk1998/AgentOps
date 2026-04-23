@@ -164,15 +164,15 @@ async function handleLogin() {
   overflow: hidden;
 }
 
-/* Grid backdrop — subtle terminal aesthetic */
+/* Grid backdrop — subtle terminal aesthetic, visible in both themes */
 .login-backdrop {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(to right, var(--border) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+    linear-gradient(to right, var(--border-strong) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border-strong) 1px, transparent 1px);
   background-size: 40px 40px;
-  opacity: 0.35;
+  opacity: 0.5;
   mask-image: radial-gradient(circle at 50% 50%, black 0%, transparent 70%);
   -webkit-mask-image: radial-gradient(circle at 50% 50%, black 0%, transparent 70%);
   pointer-events: none;

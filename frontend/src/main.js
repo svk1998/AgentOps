@@ -12,6 +12,7 @@ import Aura from '@primeuix/themes/aura'
 import App from './App.vue'
 import router from './router'
 import './services/interceptors' // register axios interceptors
+import { useThemeStore } from './stores/theme'
 
 // Global styles
 import 'primeicons/primeicons.css'
@@ -81,5 +82,9 @@ app.use(PrimeVue, {
 app.use(ToastService)
 app.use(ConfirmationService)
 app.directive('tooltip', Tooltip)
+
+// Initialize theme (reads persisted choice, else OS preference) and applies
+// it to <html> before the first render — prevents a flash of wrong theme.
+useThemeStore()
 
 app.mount('#app')

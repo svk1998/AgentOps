@@ -14,15 +14,23 @@ body {
   font-family: "Inter Tight", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: 13px;
   line-height: 1.45;
+  font-feature-settings: "ss01", "cv11", "tnum";
   -webkit-font-smoothing: antialiased;
-  font-feature-settings: "ss01", "cv11";
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   overflow: hidden;
 }
 
 /* Ensure all nested elements inherit the sans stack (defensive — prevents any
    user-agent default from reverting to serif for headings/tables/etc.) */
 body, body * { font-family: inherit; }
-.mono, .mono * { font-family: var(--mono) !important; }
+.mono, .mono * {
+  font-family: var(--mono) !important;
+  font-feature-settings: "zero", "ss01", "tnum" !important;
+}
+
+/* Tabular numbers on table cells and KPI values (aligns columns of numbers) */
+table, td, th, .num, .tabnum { font-variant-numeric: tabular-nums; }
 
 #app { height: 100vh; overflow: hidden; }
 

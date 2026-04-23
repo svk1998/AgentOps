@@ -176,36 +176,46 @@ const initials = computed(() => {
   return name.split(/[\s@]/).map(s => s[0]).filter(Boolean).slice(0, 2).join('').toUpperCase() || '?'
 })
 
-// ── Inline SVG icon components ───────────────────────────────────────────────
+// ── Inline SVG icons ────────────────────────────────────────────────────────
+// Extracted from the AgentOps standalone bundle. 16x16 viewBox, 1.4 stroke,
+// round caps/joins — identical rendering to the design source.
+const svg = (paths) =>
+  `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`
+
 const IconFleet = {
-  template: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>`
+  template: svg(`<rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/>`),
 }
-const IconEval = {
-  template: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l2-3 3 1 5-7"/><path d="M13 4h1v1"/></svg>`
+const IconLive = {
+  template: svg(`<circle cx="8" cy="8" r="2"/><circle cx="8" cy="8" r="5"/><circle cx="8" cy="8" r="7.2" opacity="0.4"/>`),
 }
 const IconDatabase = {
-  template: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="8" cy="4" rx="6" ry="2"/><path d="M2 4v4c0 1.1 2.7 2 6 2s6-.9 6-2V4"/><path d="M2 8v4c0 1.1 2.7 2 6 2s6-.9 6-2V8"/></svg>`
+  template: svg(`<ellipse cx="8" cy="4" rx="6" ry="2"/><path d="M2 4v4c0 1.1 2.7 2 6 2s6-.9 6-2V4"/><path d="M2 8v4c0 1.1 2.7 2 6 2s6-.9 6-2V8"/>`),
 }
-const IconPlay = {
-  template: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M6.5 5.5l4 2.5-4 2.5z" fill="currentColor" stroke="none"/></svg>`
+const IconEval = {
+  template: svg(`<path d="M3 13l2-3 3 1 5-7"/><path d="M13 4h1v1"/>`),
 }
-const IconEye = {
-  template: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2"/></svg>`
+const IconTrace = {
+  template: svg(`<path d="M2 4h12M2 8h8M2 12h5"/><circle cx="14" cy="4" r="1" fill="currentColor"/><circle cx="10" cy="8" r="1" fill="currentColor"/><circle cx="7" cy="12" r="1" fill="currentColor"/>`),
 }
 const IconChart = {
-  template: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12l3-4 3 2 4-6"/><path d="M2 14h12"/></svg>`
+  template: svg(`<path d="M2 12l3-4 3 2 4-6"/><path d="M2 14h12"/>`),
 }
 const IconUsers = {
-  template: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="5" r="2.5"/><path d="M1 14c0-2.8 2.2-5 5-5s5 2.2 5 5"/><path d="M11 3.5c1.4 0 2.5 1.1 2.5 2.5S12.4 8.5 11 8.5M15 14c0-2.2-1.8-4-4-4"/></svg>`
+  template: svg(`<circle cx="6" cy="5" r="2.5"/><path d="M1 14c0-2.8 2.2-5 5-5s5 2.2 5 5"/><path d="M11 3.5c1.4 0 2.5 1.1 2.5 2.5S12.4 8.5 11 8.5M15 14c0-2.2-1.8-4-4-4"/>`),
 }
 const IconSettings = {
-  template: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.1 3.1l1.4 1.4M11.5 11.5l1.4 1.4M3.1 12.9l1.4-1.4M11.5 4.5l1.4-1.4"/></svg>`
+  template: svg(`<circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.1 3.1l1.4 1.4M11.5 11.5l1.4 1.4M3.1 12.9l1.4-1.4M11.5 4.5l1.4-1.4"/>`),
 }
+
+// Icons at 13px for topbar / menu row
+const svg13 = (paths) =>
+  `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`
+
 const IconHome = {
-  template: `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5L8 2l6 4.5V14a1 1 0 01-1 1H3a1 1 0 01-1-1z"/><path d="M6 15V9h4v6"/></svg>`
+  template: svg13(`<path d="M2 6.5L8 2l6 4.5V14a1 1 0 01-1 1H3a1 1 0 01-1-1z"/><path d="M6 15V9h4v6"/>`),
 }
 const IconSignOut = {
-  template: `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3H3a1 1 0 00-1 1v8a1 1 0 001 1h3"/><path d="M10 11l4-3-4-3"/><path d="M6 8h8"/></svg>`
+  template: svg13(`<path d="M6 3H3a1 1 0 00-1 1v8a1 1 0 001 1h3"/><path d="M10 11l4-3-4-3"/><path d="M6 8h8"/>`),
 }
 
 // ── Navigation ────────────────────────────────────────────────────────────────
@@ -213,16 +223,16 @@ const navSections = computed(() => [
   {
     label: 'Platform',
     items: [
-      { to: '/dashboard',       icon: IconFleet,    label: 'Dashboard',  shortcut: '1' },
-      { to: '/registry/agents', icon: IconEval,     label: 'Agents',     shortcut: '2' },
+      { to: '/dashboard',       icon: IconFleet, label: 'Dashboard', shortcut: '1' },
+      { to: '/registry/agents', icon: IconLive,  label: 'Agents',    shortcut: '2' },
     ],
   },
   {
     label: 'Evaluate',
     items: [
       { to: '/evaluate/datasets',   icon: IconDatabase, label: 'Datasets',   shortcut: '3' },
-      { to: '/evaluate/runs',       icon: IconPlay,     label: 'Eval Runs',  shortcut: '4' },
-      { to: '/evaluate/playground', icon: IconEye,      label: 'Playground', shortcut: '5' },
+      { to: '/evaluate/runs',       icon: IconEval,     label: 'Eval Runs',  shortcut: '4' },
+      { to: '/evaluate/playground', icon: IconTrace,    label: 'Playground', shortcut: '5' },
     ],
   },
   {

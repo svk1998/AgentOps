@@ -7,9 +7,18 @@ from app.models.user import UserRole
 
 class UserCreate(BaseModel):
     email: EmailStr
-    password: str
+    password: str = Field(min_length=8, max_length=128)
     display_name: str | None = None
     full_name: str | None = None
+    role: UserRole | None = None
+
+
+class UserUpdate(BaseModel):
+    email: EmailStr | None = None
+    password: str | None = Field(default=None, min_length=8, max_length=128)
+    display_name: str | None = None
+    role: UserRole | None = None
+    is_active: bool | None = None
 
 
 class UserOut(BaseModel):

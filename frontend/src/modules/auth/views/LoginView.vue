@@ -38,6 +38,14 @@
           Signed out. See you again.
         </div>
 
+        <!-- Session-expired banner — appears when auto-refresh fails -->
+        <div v-else-if="reason === 'session-expired'" class="login-warn mono">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="8" cy="8" r="6.5"/><path d="M8 4.5v4M8 11.5v0.01"/>
+          </svg>
+          Your session expired. Please sign in again.
+        </div>
+
         <form class="login-form" @submit.prevent="handleLogin">
           <div class="field">
             <label for="email" class="field-label mono">Email</label>
@@ -277,6 +285,18 @@ async function handleLogin() {
   border: 1px solid var(--ok);
   border-radius: var(--r);
   color: var(--ok);
+  font-size: 11.5px;
+}
+
+.login-warn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--warn-dim);
+  border: 1px solid var(--warn);
+  border-radius: var(--r);
+  color: var(--warn);
   font-size: 11.5px;
 }
 

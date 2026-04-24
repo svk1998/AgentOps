@@ -12,6 +12,7 @@ import Aura from '@primeuix/themes/aura'
 import App from './App.vue'
 import router from './router'
 import './services/interceptors' // register axios interceptors
+import { useAuthStore } from './stores/auth'
 import { useThemeStore } from './stores/theme'
 
 // Global styles
@@ -87,4 +88,14 @@ app.directive('tooltip', Tooltip)
 // it to <html> before the first render — prevents a flash of wrong theme.
 useThemeStore()
 
-app.mount('#app')
+// Rehydrate auth state from the persisted JWT (if any) BEFORE mounting.
+// This calls /auth/me so the `user` object is ready when the router guards
+// evaluate meta.requiresAuth / requiresRole. Without this, a page refresh
+// on an authenticated route bounces to /login because `user` is briefly null.
+async function boot() {
+  const auth = useAuthStore()
+  await auth.init()
+  app.mount('#app')
+}
+
+boot()

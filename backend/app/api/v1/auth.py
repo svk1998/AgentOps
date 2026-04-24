@@ -56,6 +56,18 @@ async def me(current_user: User = Depends(get_current_user)):
     return current_user
 
 
+@router.post("/refresh", response_model=TokenOut)
+async def refresh(current_user: User = Depends(get_current_user)):
+    """Exchange a valid token for a fresh one.
+
+    The frontend calls this before the current token expires so sessions
+    can outlive a single JWT lifetime without forcing re-login. Requires
+    the current token to still be valid — expired tokens 401 in
+    get_current_user and never reach here.
+    """
+    return TokenOut(access_token=create_access_token(str(current_user.id)))
+
+
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 async def logout(_: User = Depends(get_current_user)):
     """Client-side logout for stateless JWT.

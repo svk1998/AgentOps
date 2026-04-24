@@ -13,13 +13,22 @@ src/
 │   └── theme.css              design tokens — exact AgentOps standalone palette
 │
 ├── components/
-│   ├── ui/                    ← canonical design system primitives
+│   ├── ui/                    ← canonical design system — 11 reusable components
+│   │   │   Visual atoms (pure presentation)
 │   │   ├── Chip.vue           pill with variants (ok/warn/err/info/accent)
+│   │   ├── StatusDot.vue      semantic status indicator
+│   │   ├── Sparkline.vue      SVG mini-chart
+│   │   │   Data display
 │   │   ├── DataTable.vue      data-dense table, slot-based cell rendering
 │   │   ├── Kpi.vue            label + value + delta + sparkline KPI card
 │   │   ├── Panel.vue          titled card with header + actions slot
-│   │   ├── Sparkline.vue      SVG mini-chart
-│   │   └── StatusDot.vue      semantic status indicator
+│   │   │   Layout / page chrome
+│   │   ├── PageHeader.vue     every view's top block: eyebrow + title + meta + actions
+│   │   ├── EmptyState.vue     icon + title + subtitle for empty lists
+│   │   │   Forms / interaction
+│   │   ├── FormField.vue      label + control slot + hint + error wrapper
+│   │   ├── SearchInput.vue    search input with magnifier icon + clear button
+│   │   └── Dialog.vue         Teleport'd modal with ESC + backdrop close + autofocus
 │   └── _legacy/               ← pre-Phase-1 App* components, kept for
 │                                orphaned modules only (not used by new views)
 │
@@ -94,10 +103,21 @@ src/
 | **jwt-decode** | client-side JWT `exp` claim decoding for session management |
 | **PrimeVue** (limited) | Toast + ConfirmDialog services only. Custom UI primitives for everything visible |
 
-**All visible UI is custom-built** in `components/ui/` to match the AgentOps
-standalone design. PrimeVue is kept as a utility/a11y provider for toasts and
-confirmation dialogs; its own components are not used directly anywhere in the
-active Phase 1 views.
+### Why no generic UI framework?
+
+The design is very specific (amber accent on near-black, 10.5px uppercase
+mono labels, tabular numerics, 1-px-gap KPI strips). Vuetify / Element Plus
+/ Naive UI would all require heavy restyling and still fight us on details.
+Headless libs like `reka-ui` or `@headlessui/vue` are a good alternative
+**if** we need more a11y-correct behavior than we've built — but at this
+scale PrimeVue's Toast + ConfirmDialog services cover it, and our own
+`<Dialog>` wraps the remaining modal pattern we actually need.
+
+**Rule of thumb:**
+ - Something repeated across 3+ views → make it a reusable component in
+   `components/ui/` using our tokens.
+ - Something that requires focus-trap / keyboard nav / ARIA we don't want
+   to own → reach for a library (PrimeVue today; add `reka-ui` if needed).
 
 ## Standard patterns
 

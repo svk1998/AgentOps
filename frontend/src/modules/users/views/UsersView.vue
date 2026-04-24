@@ -1,25 +1,18 @@
 <template>
   <div class="page">
-    <!-- Header -->
-    <div class="page-head">
-      <div>
-        <div class="page-eyebrow mono faint">admin</div>
-        <h1 class="page-title">Users</h1>
-        <div class="page-sub mono">
-          <span>{{ users.length }} user{{ users.length === 1 ? '' : 's' }}</span>
-          <span class="sep">·</span>
-          <span class="text-success">{{ counts.active }} active</span>
-          <span class="sep">·</span>
-          <span class="text-muted">{{ counts.inactive }} inactive</span>
-          <span class="sep">·</span>
-          <span class="text-accent">{{ counts.admin }} admin</span>
-        </div>
-      </div>
-      <div class="page-actions">
-        <div class="search-wrap">
-          <Search :size="12" :stroke-width="1.6" class="search-icon" />
-          <input v-model="search" class="input search-input" placeholder="Search users…" />
-        </div>
+    <!-- ── Header ──────────────────────────────────────────────────── -->
+    <PageHeader eyebrow="admin" title="Users">
+      <template #meta>
+        <span>{{ (users || []).length }} user{{ (users || []).length === 1 ? '' : 's' }}</span>
+        <span class="sep">·</span>
+        <span class="text-success">{{ counts.active }} active</span>
+        <span class="sep">·</span>
+        <span class="text-muted">{{ counts.inactive }} inactive</span>
+        <span class="sep">·</span>
+        <span class="text-accent">{{ counts.admin }} admin</span>
+      </template>
+      <template #actions>
+        <SearchInput v-model="search" placeholder="Search users…" />
         <select v-model="filters.role" class="input">
           <option value="">All roles</option>
           <option v-for="r in ROLES" :key="r" :value="r">{{ r }}</option>
@@ -37,10 +30,10 @@
           <Plus :size="12" :stroke-width="2" />
           New user
         </button>
-      </div>
-    </div>
+      </template>
+    </PageHeader>
 
-    <!-- Table -->
+    <!-- ── Table ───────────────────────────────────────────────────── -->
     <Panel :padding="false">
       <DataTable
         :columns="cols"
@@ -98,85 +91,83 @@
       </DataTable>
     </Panel>
 
-    <div v-if="error" class="error-banner mono">{{ error }}</div>
+    <!-- ── Create / Edit Dialog ────────────────────────────────────── -->
+    <Dialog
+      v-model="modalOpen"
+      :eyebrow="editing ? 'edit user' : 'new user'"
+      :title="editing ? (editing.display_name || editing.email) : 'Create user'"
+      size="md"
+    >
+      <form id="user-form" class="form" @submit.prevent="submitForm">
+        <FormField label="Email">
+          <template #default="{ id }">
+            <input :id="id" v-model="form.email" type="email" class="input" required />
+          </template>
+        </FormField>
 
-    <!-- ── Modal: Create / Edit ── -->
-    <Teleport to="body">
-      <div v-if="modalOpen" class="modal-overlay" @click.self="closeModal">
-        <div class="modal-card" role="dialog" aria-modal="true">
-          <div class="modal-head">
-            <div>
-              <div class="page-eyebrow mono faint">{{ editing ? 'edit user' : 'new user' }}</div>
-              <h2 class="modal-title">{{ editing ? (editing.display_name || editing.email) : 'Create user' }}</h2>
-            </div>
-            <button class="btn ghost icon-btn" aria-label="Close" @click="closeModal">
-              <X :size="13" :stroke-width="1.75" />
-            </button>
-          </div>
+        <FormField label="Display name">
+          <template #default="{ id }">
+            <input :id="id" v-model="form.display_name" type="text" class="input" placeholder="e.g. Jane Doe" />
+          </template>
+        </FormField>
 
-          <form class="modal-form" @submit.prevent="submitForm">
-            <div class="field">
-              <label class="field-label mono">Email</label>
-              <input v-model="form.email" type="email" class="input" required autofocus />
-            </div>
+        <div class="grid-2">
+          <FormField label="Role">
+            <template #default="{ id }">
+              <select :id="id" v-model="form.role" class="input">
+                <option v-for="r in ROLES" :key="r" :value="r">{{ r }}</option>
+              </select>
+            </template>
+          </FormField>
 
-            <div class="field">
-              <label class="field-label mono">Display name</label>
-              <input v-model="form.display_name" type="text" class="input" placeholder="e.g. Jane Doe" />
-            </div>
-
-            <div class="grid-2">
-              <div class="field">
-                <label class="field-label mono">Role</label>
-                <select v-model="form.role" class="input">
-                  <option v-for="r in ROLES" :key="r" :value="r">{{ r }}</option>
-                </select>
-              </div>
-              <div v-if="editing" class="field">
-                <label class="field-label mono">Status</label>
-                <select v-model="form.is_active" class="input">
-                  <option :value="true">active</option>
-                  <option :value="false">inactive</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="field">
-              <label class="field-label mono">
-                <span>{{ editing ? 'Reset password' : 'Password' }}</span>
-                <span class="field-hint mono">{{ editing ? 'leave blank to keep current' : 'min 8 chars' }}</span>
-              </label>
-              <input
-                v-model="form.password"
-                type="password"
-                class="input"
-                :required="!editing"
-                :minlength="!editing ? 8 : undefined"
-                placeholder="••••••••"
-              />
-            </div>
-
-            <div v-if="modalError" class="form-error mono">
-              <CircleAlert :size="12" :stroke-width="1.75" />
-              {{ modalError }}
-            </div>
-
-            <div class="modal-actions">
-              <button type="button" class="btn ghost" :disabled="submitting" @click="closeModal">Cancel</button>
-              <button type="submit" class="btn primary" :disabled="submitting">
-                {{ submitting ? (editing ? 'Saving…' : 'Creating…') : (editing ? 'Save changes' : 'Create user') }}
-              </button>
-            </div>
-          </form>
+          <FormField v-if="editing" label="Status">
+            <template #default="{ id }">
+              <select :id="id" v-model="form.is_active" class="input">
+                <option :value="true">active</option>
+                <option :value="false">inactive</option>
+              </select>
+            </template>
+          </FormField>
         </div>
-      </div>
-    </Teleport>
+
+        <FormField
+          :label="editing ? 'Reset password' : 'Password'"
+          :hint="editing ? 'leave blank to keep current' : 'min 8 chars'"
+        >
+          <template #default="{ id }">
+            <input
+              :id="id"
+              v-model="form.password"
+              type="password"
+              class="input"
+              :required="!editing"
+              :minlength="!editing ? 8 : undefined"
+              placeholder="••••••••"
+            />
+          </template>
+        </FormField>
+
+        <div v-if="modalError" class="form-error mono">
+          <CircleAlert :size="12" :stroke-width="1.75" />
+          {{ modalError }}
+        </div>
+      </form>
+
+      <template #footer>
+        <button type="button" class="btn ghost" :disabled="submitting" @click="modalOpen = false">
+          Cancel
+        </button>
+        <button type="submit" form="user-form" class="btn primary" :disabled="submitting">
+          {{ submitting ? (editing ? 'Saving…' : 'Creating…') : (editing ? 'Save changes' : 'Create user') }}
+        </button>
+      </template>
+    </Dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { Search, RefreshCw, Plus, X, CircleAlert } from 'lucide-vue-next'
+import { RefreshCw, Plus, CircleAlert } from 'lucide-vue-next'
 
 import { userService } from '@/services/userService'
 import { useAuthStore } from '@/stores/auth'
@@ -185,10 +176,15 @@ import { useToast } from '@/composables/useToast'
 import { formatRelativeTime, formatDateTime } from '@/utils/format'
 import { USER_ROLES, USER_ROLE_CHIP } from '@/constants/enums'
 
+// Reusable components
+import PageHeader from '@/components/ui/PageHeader.vue'
 import Panel from '@/components/ui/Panel.vue'
 import Chip from '@/components/ui/Chip.vue'
 import StatusDot from '@/components/ui/StatusDot.vue'
 import DataTable from '@/components/ui/DataTable.vue'
+import Dialog from '@/components/ui/Dialog.vue'
+import FormField from '@/components/ui/FormField.vue'
+import SearchInput from '@/components/ui/SearchInput.vue'
 
 const ROLES = USER_ROLES
 
@@ -259,7 +255,6 @@ function roleVariant(role) {
   return USER_ROLE_CHIP[role] ?? null
 }
 
-// Surface any load errors in a toast (the error banner stays for detail)
 watch(error, (e) => { if (e) toast.error(e) })
 
 function openCreate() {
@@ -280,14 +275,6 @@ function openEdit(u) {
   }
   modalError.value = ''
   modalOpen.value = true
-}
-
-function closeModal() {
-  if (submitting.value) return
-  modalOpen.value = false
-  editing.value = null
-  form.value = newForm()
-  modalError.value = ''
 }
 
 async function submitForm() {
@@ -313,7 +300,7 @@ async function submitForm() {
       })
       toast.success(`Created ${form.value.email}`)
     }
-    closeModal()
+    modalOpen.value = false
     await load()
   } catch (e) {
     modalError.value = e?.response?.data?.detail || e?.message || 'Save failed'
@@ -346,18 +333,7 @@ async function reactivate(u) {
 
 <style scoped>
 .page { display: flex; flex-direction: column; gap: 14px; }
-
-.page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 2px 2px 6px; flex-wrap: wrap; }
-.page-eyebrow { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
-.page-title { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; color: var(--text); }
-.page-sub { font-size: 11.5px; color: var(--text-dim); display: flex; gap: 6px; align-items: center; margin-top: 2px; }
-.page-sub .sep { color: var(--text-faint); }
-
-.page-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-
-.search-wrap { position: relative; display: flex; align-items: center; }
-.search-icon { position: absolute; left: 10px; color: var(--text-faint); pointer-events: none; }
-.search-input { padding-left: 28px; min-width: 200px; }
+.page-head :deep(.sep) { color: var(--text-faint); }
 
 select.input { cursor: pointer; }
 
@@ -396,67 +372,11 @@ select.input { cursor: pointer; }
 .btn.ghost.success { color: var(--ok); }
 .btn.ghost.success:hover { background: var(--ok-dim); color: var(--ok); }
 
-.error-banner {
-  background: var(--err-dim);
-  color: var(--err);
-  border: 1px solid var(--err);
-  border-radius: var(--r);
-  padding: 10px 14px;
-  font-size: 12px;
-}
-
 .spin { animation: spin 1s linear infinite; }
 
-/* ── Modal ── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(2px);
-  display: grid;
-  place-items: center;
-  z-index: 1000;
-  padding: 20px;
-  animation: overlayIn 0.15s ease;
-}
-@keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
-
-.modal-card {
-  width: 100%;
-  max-width: 460px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  animation: cardIn 0.2s ease;
-}
-@keyframes cardIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0);   }
-}
-
-.modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.modal-title { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; color: var(--text); }
-.icon-btn { width: 26px; height: 26px; padding: 0; justify-content: center; }
-
-.modal-form { display: flex; flex-direction: column; gap: 14px; }
-.field { display: flex; flex-direction: column; gap: 6px; }
-.field-label {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  font-size: 10.5px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-}
-.field-hint { font-size: 9.5px; color: var(--text-faint); text-transform: none; letter-spacing: 0.02em; }
-
+/* Dialog form */
+.form { display: flex; flex-direction: column; gap: 14px; }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
 .form-error {
   display: flex;
   align-items: center;
@@ -468,6 +388,4 @@ select.input { cursor: pointer; }
   color: var(--err);
   font-size: 11.5px;
 }
-
-.modal-actions { display: flex; justify-content: flex-end; gap: 6px; }
 </style>

@@ -157,8 +157,8 @@ import { useAuthStore } from '@/stores/auth'
 import { userService } from '@/services/userService'
 import { formatRelativeTime } from '@/utils/format'
 
-import Panel from '@/components/primitives/Panel.vue'
-import Chip from '@/components/primitives/Chip.vue'
+import Panel from '@/components/ui/Panel.vue'
+import Chip from '@/components/ui/Chip.vue'
 
 const auth = useAuthStore()
 

@@ -148,11 +148,11 @@ import { datasetService } from '@/services/datasetService'
 import { evalRunService } from '@/services/evalRunService'
 import { formatRelativeTime, formatDateTime } from '@/utils/format'
 
-import Kpi from '@/components/primitives/Kpi.vue'
-import Panel from '@/components/primitives/Panel.vue'
-import Chip from '@/components/primitives/Chip.vue'
-import StatusDot from '@/components/primitives/StatusDot.vue'
-import DataTable from '@/components/primitives/DataTable.vue'
+import Kpi from '@/components/ui/Kpi.vue'
+import Panel from '@/components/ui/Panel.vue'
+import Chip from '@/components/ui/Chip.vue'
+import StatusDot from '@/components/ui/StatusDot.vue'
+import DataTable from '@/components/ui/DataTable.vue'
 
 // ── State ─────────────────────────────────────────────────────────────
 const loading = ref(false)

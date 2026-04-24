@@ -175,26 +175,40 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { Search, RefreshCw, Plus, X, CircleAlert } from 'lucide-vue-next'
 
 import { userService } from '@/services/userService'
 import { useAuthStore } from '@/stores/auth'
+import { useApi } from '@/composables/useApi'
+import { useToast } from '@/composables/useToast'
 import { formatRelativeTime, formatDateTime } from '@/utils/format'
+import { USER_ROLES, USER_ROLE_CHIP } from '@/constants/enums'
 
-import Panel from '@/components/primitives/Panel.vue'
-import Chip from '@/components/primitives/Chip.vue'
-import StatusDot from '@/components/primitives/StatusDot.vue'
-import DataTable from '@/components/primitives/DataTable.vue'
+import Panel from '@/components/ui/Panel.vue'
+import Chip from '@/components/ui/Chip.vue'
+import StatusDot from '@/components/ui/StatusDot.vue'
+import DataTable from '@/components/ui/DataTable.vue'
 
-const ROLES = ['admin', 'evaluator', 'viewer']
+const ROLES = USER_ROLES
 
 const auth = useAuthStore()
-const users = ref([])
-const loading = ref(false)
-const error = ref('')
+const toast = useToast()
 const search = ref('')
 const filters = ref({ role: '', is_active: '' })
+
+// Standard data-fetching pattern — see src/composables/useApi.js
+const { data: users, error, loading, refetch: load } = useApi(
+  () => userService.list(buildParams(filters.value)),
+  { initialData: [], watchDeps: [() => filters.value.role, () => filters.value.is_active] },
+)
+
+function buildParams(f) {
+  const p = {}
+  if (f.role) p.role = f.role
+  if (f.is_active !== '') p.is_active = f.is_active
+  return p
+}
 
 // ── Modal state ──
 const modalOpen = ref(false)
@@ -218,9 +232,10 @@ const cols = [
 ]
 
 const filtered = computed(() => {
+  const list = users.value || []
   const q = search.value.trim().toLowerCase()
-  if (!q) return users.value
-  return users.value.filter(u =>
+  if (!q) return list
+  return list.filter(u =>
     u.email?.toLowerCase().includes(q) ||
     u.display_name?.toLowerCase().includes(q),
   )
@@ -228,7 +243,7 @@ const filtered = computed(() => {
 
 const counts = computed(() => {
   const c = { active: 0, inactive: 0, admin: 0, evaluator: 0, viewer: 0 }
-  for (const u of users.value) {
+  for (const u of (users.value || [])) {
     c[u.is_active ? 'active' : 'inactive']++
     c[u.role] = (c[u.role] || 0) + 1
   }
@@ -241,25 +256,11 @@ function initials(u) {
 }
 
 function roleVariant(role) {
-  return { admin: 'accent', evaluator: 'info', viewer: null }[role]
+  return USER_ROLE_CHIP[role] ?? null
 }
 
-async function load() {
-  loading.value = true
-  error.value = ''
-  try {
-    const params = {}
-    if (filters.value.role) params.role = filters.value.role
-    if (filters.value.is_active !== '') params.is_active = filters.value.is_active
-    const { data } = await userService.list(params)
-    users.value = Array.isArray(data) ? data : (data?.items ?? [])
-  } catch (e) {
-    error.value = e?.response?.data?.detail || e?.message || 'Failed to load users'
-    users.value = []
-  } finally {
-    loading.value = false
-  }
-}
+// Surface any load errors in a toast (the error banner stays for detail)
+watch(error, (e) => { if (e) toast.error(e) })
 
 function openCreate() {
   editing.value = null
@@ -302,6 +303,7 @@ async function submitForm() {
       }
       if (form.value.password) payload.password = form.value.password
       await userService.update(editing.value.id, payload)
+      toast.success(`Updated ${form.value.email}`)
     } else {
       await userService.create({
         email: form.value.email,
@@ -309,6 +311,7 @@ async function submitForm() {
         display_name: form.value.display_name || null,
         role: form.value.role,
       })
+      toast.success(`Created ${form.value.email}`)
     }
     closeModal()
     await load()
@@ -323,22 +326,22 @@ async function confirmDeactivate(u) {
   if (!confirm(`Deactivate ${u.display_name || u.email}? They will no longer be able to sign in.`)) return
   try {
     await userService.remove(u.id)
+    toast.success(`Deactivated ${u.display_name || u.email}`)
     await load()
   } catch (e) {
-    error.value = e?.response?.data?.detail || e?.message || 'Deactivate failed'
+    toast.error(e?.response?.data?.detail || e?.message || 'Deactivate failed')
   }
 }
 
 async function reactivate(u) {
   try {
     await userService.reactivate(u.id)
+    toast.success(`Reactivated ${u.display_name || u.email}`)
     await load()
   } catch (e) {
-    error.value = e?.response?.data?.detail || e?.message || 'Reactivate failed'
+    toast.error(e?.response?.data?.detail || e?.message || 'Reactivate failed')
   }
 }
-
-onMounted(load)
 </script>
 
 <style scoped>

@@ -144,8 +144,8 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { agentService } from '@/services/agentService'
 import { analyticsService } from '@/services/analyticsService'
 
-import Panel from '@/components/primitives/Panel.vue'
-import Kpi from '@/components/primitives/Kpi.vue'
+import Panel from '@/components/ui/Panel.vue'
+import Kpi from '@/components/ui/Kpi.vue'
 
 const agents = ref([])
 const selectedAgentId = ref('')

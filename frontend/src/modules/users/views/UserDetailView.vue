@@ -180,9 +180,9 @@ import { userService } from '@/services/userService'
 import { useAuthStore } from '@/stores/auth'
 import { formatRelativeTime, formatDateTime } from '@/utils/format'
 
-import Panel from '@/components/primitives/Panel.vue'
-import Chip from '@/components/primitives/Chip.vue'
-import StatusDot from '@/components/primitives/StatusDot.vue'
+import Panel from '@/components/ui/Panel.vue'
+import Chip from '@/components/ui/Chip.vue'
+import StatusDot from '@/components/ui/StatusDot.vue'
 
 const ROLES = ['admin', 'evaluator', 'viewer']
 

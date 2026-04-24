@@ -91,10 +91,10 @@ import { ref, computed, onMounted } from 'vue'
 import { agentService } from '@/services/agentService'
 import { formatRelativeTime, formatDateTime } from '@/utils/format'
 
-import Panel from '@/components/primitives/Panel.vue'
-import Chip from '@/components/primitives/Chip.vue'
-import StatusDot from '@/components/primitives/StatusDot.vue'
-import DataTable from '@/components/primitives/DataTable.vue'
+import Panel from '@/components/ui/Panel.vue'
+import Chip from '@/components/ui/Chip.vue'
+import StatusDot from '@/components/ui/StatusDot.vue'
+import DataTable from '@/components/ui/DataTable.vue'
 
 const AGENT_TYPES = ['llm', 'rag', 'vision', 'multi_step_chain', 'tool_use', 'custom']
 const AGENT_STATUSES = ['draft', 'active', 'deprecated', 'archived']

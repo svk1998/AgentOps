@@ -87,9 +87,9 @@ import { ref, computed, onMounted } from 'vue'
 import { evalRunService } from '@/services/evalRunService'
 import { formatRelativeTime, formatDateTime } from '@/utils/format'
 
-import Panel from '@/components/primitives/Panel.vue'
-import StatusDot from '@/components/primitives/StatusDot.vue'
-import DataTable from '@/components/primitives/DataTable.vue'
+import Panel from '@/components/ui/Panel.vue'
+import StatusDot from '@/components/ui/StatusDot.vue'
+import DataTable from '@/components/ui/DataTable.vue'
 
 const RUN_STATUSES = ['pending', 'running', 'completed', 'failed', 'cancelled']
 

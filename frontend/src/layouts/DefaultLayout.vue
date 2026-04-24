@@ -152,7 +152,7 @@ import {
 import { useAuthStore } from '@/stores/auth'
 import { useThemeStore } from '@/stores/theme'
 
-import Chip from '@/components/primitives/Chip.vue'
+import Chip from '@/components/ui/Chip.vue'
 
 const auth = useAuthStore()
 const theme = useThemeStore()

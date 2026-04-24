@@ -144,7 +144,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { manualEvalService } from '@/services/manualEvalService'
 
-import Panel from '@/components/primitives/Panel.vue'
+import Panel from '@/components/ui/Panel.vue'
 
 const route = useRoute()
 

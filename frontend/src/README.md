@@ -160,6 +160,50 @@ confirm.danger({
 })
 ```
 
+### Reusable view composition
+
+The typical list page composes 4–5 reusable components:
+
+```vue
+<template>
+  <div class="page">
+    <PageHeader eyebrow="admin" title="Users">
+      <template #meta>
+        <span>{{ users.length }} users</span>
+        <span class="sep">·</span>
+        <span class="text-success">{{ counts.active }} active</span>
+      </template>
+      <template #actions>
+        <SearchInput v-model="search" placeholder="Search users…" />
+        <button class="btn primary" @click="openCreate">New user</button>
+      </template>
+    </PageHeader>
+
+    <Panel :padding="false">
+      <DataTable :columns="cols" :rows="filtered" empty-text="no users" />
+    </Panel>
+
+    <Dialog v-model="modalOpen" :title="editing ? 'Edit user' : 'Create user'">
+      <form id="user-form" @submit.prevent="submit">
+        <FormField label="Email">
+          <template #default="{ id }">
+            <input :id="id" v-model="form.email" class="input" type="email" required />
+          </template>
+        </FormField>
+      </form>
+      <template #footer>
+        <button class="btn ghost" @click="modalOpen = false">Cancel</button>
+        <button class="btn primary" type="submit" form="user-form">Save</button>
+      </template>
+    </Dialog>
+  </div>
+</template>
+```
+
+The canonical implementation lives in
+`src/modules/users/views/UsersView.vue` — copy from there when adding a
+new list-detail-dialog feature.
+
 ### Shared enums
 
 Use the canonical lists from `constants/enums.js` instead of inlining string

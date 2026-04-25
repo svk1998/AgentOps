@@ -13,22 +13,31 @@ src/
 │   └── theme.css              design tokens — exact AgentOps standalone palette
 │
 ├── components/
-│   ├── ui/                    ← canonical design system — 11 reusable components
+│   ├── ui/                    ← canonical design system — 19 reusable components
 │   │   │   Visual atoms (pure presentation)
+│   │   ├── Avatar.vue         initials avatar with image fallback + status pip
 │   │   ├── Chip.vue           pill with variants (ok/warn/err/info/accent)
 │   │   ├── StatusDot.vue      semantic status indicator
 │   │   ├── Sparkline.vue      SVG mini-chart
+│   │   │   Form / interaction
+│   │   ├── Button.vue         <button>/<a>/<RouterLink> with variant + loading + icon slots
+│   │   ├── FormField.vue      label + control slot + hint + error wrapper
+│   │   ├── SearchInput.vue    search input with magnifier icon + clear button
+│   │   ├── Select.vue         native <select> styled with our chevron, options array prop
+│   │   ├── Tooltip.vue        hover tooltip with placement (top/bottom/left/right)
+│   │   ├── Dialog.vue         Teleport'd modal with ESC + backdrop close + autofocus
 │   │   │   Data display
 │   │   ├── DataTable.vue      data-dense table, slot-based cell rendering
 │   │   ├── Kpi.vue            label + value + delta + sparkline KPI card
 │   │   ├── Panel.vue          titled card with header + actions slot
+│   │   ├── Tabs.vue           tabbed content with badge support, v-model active id
 │   │   │   Layout / page chrome
 │   │   ├── PageHeader.vue     every view's top block: eyebrow + title + meta + actions
+│   │   ├── FilterBar.vue      search + filter slot + applied-count + actions toolbar
 │   │   ├── EmptyState.vue     icon + title + subtitle for empty lists
-│   │   │   Forms / interaction
-│   │   ├── FormField.vue      label + control slot + hint + error wrapper
-│   │   ├── SearchInput.vue    search input with magnifier icon + clear button
-│   │   └── Dialog.vue         Teleport'd modal with ESC + backdrop close + autofocus
+│   │   │   Loading
+│   │   ├── Spinner.vue        inline loader (xs/sm/md/lg/xl, tone variants)
+│   │   └── Skeleton.vue       shimmer placeholder (line/text/block/circle)
 │   └── _legacy/               ← pre-Phase-1 App* components, kept for
 │                                orphaned modules only (not used by new views)
 │
@@ -158,6 +167,68 @@ confirm.danger({
   message: 'Deactivate this user? They will no longer sign in.',
   accept: async () => { await userService.remove(id); await refetch() },
 })
+```
+
+### Component cookbook
+
+```vue
+<!-- Buttons — variants + sizes + loading -->
+<Button variant="primary" :icon-left="Plus">New agent</Button>
+<Button variant="ghost"   :loading="saving">Save</Button>
+<Button variant="danger"  size="sm" @click="deactivate">Deactivate</Button>
+<Button to="/users" variant="ghost">Users →</Button>           <!-- RouterLink -->
+<Button href="https://docs..." variant="ghost">Docs</Button>   <!-- <a> -->
+
+<!-- Select — array of strings or {value,label} -->
+<Select v-model="role" :options="USER_ROLES" placeholder="All roles" />
+<Select v-model="status" :options="[{value:'a',label:'Active'},{value:'i',label:'Inactive'}]" />
+
+<!-- Avatar — initials with status pip -->
+<Avatar name="Ava Chen" size="md" tone="accent" status="ok" />
+
+<!-- Tabs — id-based, optional icon + badge -->
+<Tabs
+  v-model="activeTab"
+  :tabs="[
+    { id: 'profile',  label: 'Profile',  icon: User },
+    { id: 'security', label: 'Security' },
+    { id: 'audit',    label: 'Audit',    badge: 12 },
+  ]"
+>
+  <template #default="{ active }">
+    <ProfilePanel v-if="active === 'profile'" />
+    <SecurityPanel v-else-if="active === 'security'" />
+    <AuditPanel v-else />
+  </template>
+</Tabs>
+
+<!-- Tooltip — hover -->
+<Tooltip content="Refresh data" placement="bottom">
+  <Button variant="ghost" :icon-left="RefreshCw" />
+</Tooltip>
+
+<!-- Spinner / Skeleton — loading states -->
+<Spinner size="sm" tone="accent" />
+<Skeleton variant="text" :width="180" />
+<Skeleton variant="line" />
+<Skeleton variant="circle" :width="40" :height="40" />
+
+<!-- FilterBar — wraps the recurring filter toolbar -->
+<FilterBar
+  v-model:search="search"
+  search-placeholder="Search users…"
+  :applied-count="appliedFilterCount"
+  @reset="resetFilters"
+>
+  <template #filters>
+    <Select v-model="filters.role" :options="USER_ROLES" placeholder="All roles" />
+    <Select v-model="filters.is_active" :options="STATUS_OPTS" placeholder="Any status" />
+  </template>
+  <template #actions>
+    <Button variant="ghost" :icon-left="RefreshCw" @click="refetch">Refresh</Button>
+    <Button variant="primary" :icon-left="Plus" @click="openCreate">New user</Button>
+  </template>
+</FilterBar>
 ```
 
 ### Reusable view composition

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #0A0B0D;
+    color: #e2e3e8;
+    min-height: 100vh;
+    padding: 32px 24px;
+  }
+  /* Page header */
+  .page-title { font-size: 18px; font-weight: 600; color: #f0f1f5; margin-bottom: 6px; }
+  .page-sub   { font-size: 12px; color: #6b7280; margin-bottom: 28px; }
+
+  /* Stepper */
+  .stepper {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #1e2028;
+  }
+  .step { display: flex; align-items: center; gap: 8px; }
+  .step-circle {
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; flex-shrink: 0;
+  }
+  .step-circle.done   { background: #22c55e; color: #fff; }
+  .step-circle.active { background: #F5A524; color: #0A0B0D; }
+  .step-circle.todo   { background: #1e2028; border: 1px solid #2e3038; color: #555; }
+  .step-label { font-size: 12px; font-weight: 500; }
+  .step-label.done   { color: #22c55e; }
+  .step-label.active { color: #F5A524; }
+  .step-label.todo   { color: #555; }
+  .step-connector {
+    flex: 1; height: 1px; background: #1e2028;
+    min-width: 32px; max-width: 80px;
+    margin: 0 4px;
+  }
+  .step-connector.done { background: #22c55e44; }
+
+  /* Card */
+  .card {
+    background: #111318;
+    border: 1px solid #1e2028;
+    border-radius: 10px;
+    padding: 28px 32px;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .card-title { font-size: 15px; font-weight: 600; color: #f0f1f5; margin-bottom: 24px; }
+
+  /* Field groups */
+  .field-group { margin-bottom: 22px; }
+  .field-label {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+    color: #F5A524; text-transform: uppercase; margin-bottom: 8px;
+    display: block;
+  }
+  .field-hint { font-size: 11px; color: #6b7280; margin-top: 5px; }
+
+  /* Input */
+  .mock-input {
+    width: 100%; background: #0A0B0D;
+    border: 1px solid #2a2b35; border-radius: 5px;
+    padding: 9px 12px; color: #e2e3e8; font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Auth method chips */
+  .chip-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .auth-chip {
+    padding: 5px 12px; border-radius: 4px;
+    font-size: 12px; font-family: monospace;
+    border: 1px solid #2a2b35; background: #0A0B0D; color: #888;
+    cursor: pointer;
+  }
+  .auth-chip.active {
+    border-color: #F5A524; background: rgba(245,165,36,0.1); color: #F5A524;
+  }
+
+  /* Tags */
+  .tags-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .tag-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px; border-radius: 999px;
+    background: rgba(245,165,36,0.12); border: 1px solid rgba(245,165,36,0.3);
+    color: #F5A524; font-size: 11px; font-family: monospace;
+  }
+  .tag-chip .rm { color: #F5A524; opacity: 0.6; font-size: 10px; cursor: pointer; margin-left: 2px; }
+  .add-tag {
+    padding: 3px 10px; border-radius: 999px;
+    border: 1px dashed #2a2b35; background: transparent;
+    color: #555; font-size: 11px; cursor: pointer;
+  }
+
+  /* Nav buttons */
+  .form-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 32px; padding-top: 20px; border-top: 1px solid #1e2028;
+  }
+  .btn {
+    padding: 7px 16px; border-radius: 5px; font-size: 12.5px;
+    font-weight: 500; cursor: pointer; border: none;
+  }
+  .btn-ghost   { background: transparent; border: 1px solid #2a2b35; color: #888; }
+  .btn-primary { background: #F5A524; color: #0A0B0D; font-weight: 600; }
+  .btn-ghost:hover { color: #e2e3e8; border-color: #3a3b45; }
+</style>
+</head>
+<body>
+
+  <div class="page-title">Register a new agent</div>
+  <div class="page-sub">Route: /agents/new — multi-step wizard, amber dark theme</div>
+
+  <!-- Stepper -->
+  <div class="stepper">
+    <div class="step">
+      <div class="step-circle done">✓</div>
+      <span class="step-label done">Basics</span>
+    </div>
+    <div class="step-connector done"></div>
+    <div class="step">
+      <div class="step-circle done">✓</div>
+      <span class="step-label done">Schemas</span>
+    </div>
+    <div class="step-connector done"></div>
+    <div class="step">
+      <div class="step-circle active">3</div>
+      <span class="step-label active">Auth &amp; tags</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step">
+      <div class="step-circle todo">4</div>
+      <span class="step-label todo">Review</span>
+    </div>
+  </div>
+
+  <!-- Card -->
+  <div class="card">
+    <div class="card-title">Auth &amp; tags</div>
+
+    <div class="field-group">
+      <label class="field-label">Auth method</label>
+      <div class="chip-group">
+        <div class="auth-chip">none</div>
+        <div class="auth-chip">api_key</div>
+        <div class="auth-chip active">bearer_token</div>
+        <div class="auth-chip">oauth</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Header name</label>
+      <input class="mock-input" value="Authorization" readonly />
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Secret reference</label>
+      <input class="mock-input" value="secrets://wine-recognizer/prod-token" readonly />
+      <div class="field-hint">Stored encrypted; resolved at eval-time</div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Tags</label>
+      <div class="tags-row">
+        <span class="tag-chip">🏷 production <span class="rm">×</span></span>
+        <span class="tag-chip">🏷 wine <span class="rm">×</span></span>
+        <span class="tag-chip">🏷 vision <span class="rm">×</span></span>
+        <span class="tag-chip">🏷 samsung <span class="rm">×</span></span>
+        <div class="add-tag">+ add tag</div>
+      </div>
+    </div>
+
+    <div class="form-footer">
+      <button class="btn btn-ghost">← Back</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost">Cancel</button>
+        <button class="btn btn-primary">Next: Review →</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

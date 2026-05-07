@@ -1,0 +1,107 @@
+<h2>Where should the agent creation form live?</h2>
+<p class="subtitle">The agent schema has 12+ fields including complex JSON configs. Pick the container that fits best.</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Modal / Dialog</h3>
+      <p>Overlay on the Agents list. Same experience as the existing form. Quick to open, quick to dismiss — but constrained height means scrolling through many fields.</p>
+      <div class="mockup" style="margin-top:10px">
+        <div class="mockup-header">Preview</div>
+        <div class="mockup-body" style="background:#0A0B0D;padding:12px;position:relative">
+          <!-- dimmed background -->
+          <div style="opacity:0.3;font-size:11px;color:#888;margin-bottom:8px">Agents list behind overlay…</div>
+          <!-- modal -->
+          <div style="background:#141519;border:1px solid #2a2b30;border-radius:8px;padding:14px;max-width:360px;margin:0 auto">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+              <span style="color:#F5A524;font-size:13px;font-weight:600">New Agent</span>
+              <span style="color:#555;font-size:11px">✕</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="background:#1a1b20;border:1px solid #2a2b30;border-radius:4px;padding:8px;font-size:11px;color:#888">Name *</div>
+              <div style="background:#1a1b20;border:1px solid #2a2b30;border-radius:4px;padding:8px;font-size:11px;color:#888">Agent Type *</div>
+              <div style="background:#1a1b20;border:1px solid #2a2b30;border-radius:4px;padding:8px;font-size:11px;color:#888">Endpoint URL *</div>
+              <div style="color:#555;font-size:10px;text-align:center">↓ scroll for more fields…</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+              <div style="background:#1a1b20;border:1px solid #2a2b30;border-radius:4px;padding:5px 10px;font-size:11px;color:#888">Cancel</div>
+              <div style="background:#F5A524;border-radius:4px;padding:5px 10px;font-size:11px;color:#0A0B0D;font-weight:600">Create</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Dedicated Full Page</h3>
+      <p>Route: <code>/agents/new</code>. Fields grouped into tabs or sections (Basic Info, Config, Schema, Auth). Ample space for JSON editors, tags, and optional fields.</p>
+      <div class="mockup" style="margin-top:10px">
+        <div class="mockup-header">Preview</div>
+        <div class="mockup-body" style="background:#0A0B0D;padding:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <div>
+              <div style="color:#F5A524;font-size:12px;font-weight:600">New Agent</div>
+              <div style="color:#555;font-size:10px">Register a new agent in the platform</div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <div style="background:#1a1b20;border:1px solid #2a2b30;border-radius:4px;padding:4px 8px;font-size:10px;color:#888">Cancel</div>
+              <div style="background:#F5A524;border-radius:4px;padding:4px 8px;font-size:10px;color:#0A0B0D;font-weight:600">Create Agent</div>
+            </div>
+          </div>
+          <!-- tabs -->
+          <div style="display:flex;gap:2px;border-bottom:1px solid #2a2b30;margin-bottom:10px">
+            <div style="border-bottom:2px solid #F5A524;padding:4px 8px;font-size:10px;color:#F5A524">Basic</div>
+            <div style="padding:4px 8px;font-size:10px;color:#555">Config</div>
+            <div style="padding:4px 8px;font-size:10px;color:#555">Schema</div>
+            <div style="padding:4px 8px;font-size:10px;color:#555">Auth</div>
+          </div>
+          <!-- fields -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="background:#141519;border:1px solid #2a2b30;border-radius:4px;padding:7px;font-size:10px;color:#888">Name *</div>
+            <div style="background:#141519;border:1px solid #2a2b30;border-radius:4px;padding:7px;font-size:10px;color:#888">Agent Type *</div>
+            <div style="grid-column:span 2;background:#141519;border:1px solid #2a2b30;border-radius:4px;padding:7px;font-size:10px;color:#888">Endpoint URL *</div>
+            <div style="background:#141519;border:1px solid #2a2b30;border-radius:4px;padding:7px;font-size:10px;color:#888">Model Provider</div>
+            <div style="background:#141519;border:1px solid #2a2b30;border-radius:4px;padding:7px;font-size:10px;color:#888">Owner</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Wide Drawer (Side Panel)</h3>
+      <p>Slides in from the right over the Agents list. 520–600px wide. Keeps the list visible for context. Good middle ground between modal and full page.</p>
+      <div class="mockup" style="margin-top:10px">
+        <div class="mockup-header">Preview</div>
+        <div class="mockup-body" style="background:#0A0B0D;padding:12px;display:flex;gap:0">
+          <!-- list side -->
+          <div style="flex:1;opacity:0.35;font-size:10px;color:#888;padding-right:8px">
+            <div style="margin-bottom:6px;color:#555">Agents list</div>
+            <div style="background:#141519;border:1px solid #2a2b30;border-radius:3px;padding:5px;margin-bottom:4px;font-size:9px">agent-alpha</div>
+            <div style="background:#141519;border:1px solid #2a2b30;border-radius:3px;padding:5px;margin-bottom:4px;font-size:9px">agent-beta</div>
+          </div>
+          <!-- drawer -->
+          <div style="width:200px;background:#141519;border-left:1px solid #2a2b30;padding:10px;flex-shrink:0">
+            <div style="color:#F5A524;font-size:11px;font-weight:600;margin-bottom:10px">New Agent</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="background:#0A0B0D;border:1px solid #2a2b30;border-radius:3px;padding:6px;font-size:10px;color:#888">Name *</div>
+              <div style="background:#0A0B0D;border:1px solid #2a2b30;border-radius:3px;padding:6px;font-size:10px;color:#888">Agent Type *</div>
+              <div style="background:#0A0B0D;border:1px solid #2a2b30;border-radius:3px;padding:6px;font-size:10px;color:#888">Endpoint URL *</div>
+              <div style="background:#0A0B0D;border:1px solid #2a2b30;border-radius:3px;padding:6px;font-size:10px;color:#888">Model Provider</div>
+            </div>
+            <div style="margin-top:10px;display:flex;justify-content:flex-end;gap:5px">
+              <div style="background:#0A0B0D;border:1px solid #2a2b30;border-radius:3px;padding:4px 7px;font-size:9px;color:#888">Cancel</div>
+              <div style="background:#F5A524;border-radius:3px;padding:4px 7px;font-size:9px;color:#0A0B0D;font-weight:600">Create</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

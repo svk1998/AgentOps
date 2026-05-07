@@ -29,6 +29,12 @@ export const routes = [
         component: () => import('@/modules/registry/views/AgentsView.vue'),
         meta: { requiresAuth: true, title: 'Agents' }
       },
+      {
+        path: 'agents/new',
+        name: 'AgentCreate',
+        component: () => import('@/modules/agents/views/AgentCreateView.vue'),
+        meta: { requiresAuth: true, title: 'New Agent' }
+      },
 
       // Evaluate
       {

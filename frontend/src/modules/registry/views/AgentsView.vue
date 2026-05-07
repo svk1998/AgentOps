@@ -88,6 +88,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { agentService } from '@/services/agentService'
 import { formatRelativeTime, formatDateTime } from '@/utils/format'
 
@@ -95,6 +96,8 @@ import Panel from '@/components/ui/Panel.vue'
 import Chip from '@/components/ui/Chip.vue'
 import StatusDot from '@/components/ui/StatusDot.vue'
 import DataTable from '@/components/ui/DataTable.vue'
+
+const router = useRouter()
 
 const AGENT_TYPES = ['llm', 'rag', 'vision', 'multi_step_chain', 'tool_use', 'custom']
 const AGENT_STATUSES = ['draft', 'active', 'deprecated', 'archived']
@@ -154,8 +157,7 @@ async function load() {
 }
 
 function createNew() {
-  // Placeholder — full create form lives at /registry/agents/new in future iterations
-  error.value = 'Agent creation form coming next iteration'
+  router.push('/agents/new')
 }
 
 onMounted(load)
